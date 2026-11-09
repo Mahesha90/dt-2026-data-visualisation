@@ -1,356 +1,1072 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Digital Humanities -Lesson 10</title>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
-<style>
-:root {
-  --bg:       #f7f6f2;
-  --surface:  #ffffff;
-  --border:   #e2dfd8;
-  --fg:       #1a1917;
-  --fg-mid:   #5a5651;
-  --fg-dim:   #9a948d;
-  --teal:     #0d6e6e;
-  --teal-lt:  #d4eeee;
-  --coral:    #c0462a;
-  --coral-lt: #fce8e3;
-  --gold:     #9b6e00;
-  --gold-lt:  #fef3d4;
-  --indigo:   #3842a0;
-  --indigo-lt:#e8eaf8;
-  --code-bg:  #1e1e2e;
-  --code-fg:  #cdd6f4;
-  font-family: 'Inter', system-ui, sans-serif;
-}
-@media (prefers-color-scheme: dark) {
-  :root {
-    --bg:       #13120f;
-    --surface:  #1e1d19;
-    --border:   #2e2c27;
-    --fg:       #f0ece4;
-    --fg-mid:   #9a948d;
-    --fg-dim:   #5a5651;
-    --teal:     #3dbfbf;
-    --teal-lt:  #0d2e2e;
-    --coral:    #e8795e;
-    --coral-lt: #2e1510;
-    --gold:     #e0b040;
-    --gold-lt:  #2a200a;
-    --indigo:   #818cf8;
-    --indigo-lt:#1a1d3a;
-    --code-bg:  #12111c;
-    color-scheme: dark;
-  }
-}
-*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-body {
-  background: var(--bg);
-  color: var(--fg);
-  padding: 0 max(16px, 2vw) 3rem;
-  line-height: 1.6;
-}
-.page-header {
-  background: var(--teal);
-  color: #fff;
-  padding: 2rem max(24px, 2vw);
-  margin: 0 max(-16px, -2vw) 2rem;
-}
-.page-header h1 {
-  font-size: clamp(1.5rem, 4vw, 2.25rem);
-  font-weight: 700;
-  letter-spacing: -0.02em;
-  line-height: 1.2;
-}
-.page-header .subtitle {
-  margin-top: 0.4rem;
-  font-size: 1rem;
-  opacity: 0.85;
-}
-.session-tabs {
-  display: flex;
-  gap: 0.5rem;
-  margin-top: 1.25rem;
-  flex-wrap: wrap;
-}
-.session-tab {
-  background: rgba(255,255,255,0.18);
-  border: 1px solid rgba(255,255,255,0.3);
-  color: #fff;
-  border-radius: 2rem;
-  padding: 0.3rem 0.9rem;
-  font-size: 0.8rem;
-  font-weight: 600;
-  cursor: pointer;
-  transition: background 0.15s;
-  letter-spacing: 0.03em;
-  text-transform: uppercase;
-  font-family: inherit;
-}
-.session-tab:hover, .session-tab.active {
-  background: rgba(255,255,255,0.35);
-}
-.dh-banner {
-  background: var(--gold-lt);
-  border: 1px solid var(--gold);
-  border-radius: 10px;
-  padding: 1.1rem 1.25rem;
-  margin-bottom: 2rem;
-  display: flex;
-  gap: 0.75rem;
-  align-items: flex-start;
-}
-.dh-banner-icon { font-size: 1.5rem; line-height: 1; flex-shrink: 0; }
-.dh-banner-text strong {
-  display: block;
-  color: var(--gold);
-  font-size: 0.75rem;
-  font-weight: 700;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  margin-bottom: 0.2rem;
-}
-.dh-banner-text p { font-size: 0.9rem; color: var(--fg); line-height: 1.5; }
-.section-label {
-  display: flex;
-  align-items: center;
-  gap: 0.6rem;
-  margin-bottom: 1rem;
-  margin-top: 2rem;
-}
-.section-label h2 {
-  font-size: 1rem;
-  font-weight: 700;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-  color: var(--fg-mid);
-  white-space: nowrap;
-}
-.section-label::after {
-  content: "";
-  flex: 1;
-  height: 1px;
-  background: var(--border);
-}
-.cards {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(min(100%, 420px), 1fr));
-  gap: 1rem;
-  margin-bottom: 0.5rem;
-}
-.card {
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: 10px;
-  overflow: hidden;
-}
-.card-head {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 0.65rem 1rem;
-  border-bottom: 1px solid var(--border);
-  gap: 0.5rem;
-}
-.card-title { font-size: 0.82rem; font-weight: 700; color: var(--fg); }
-.ex-badge {
-  font-size: 0.7rem;
-  font-weight: 600;
-  letter-spacing: 0.05em;
-  border-radius: 999px;
-  padding: 0.15rem 0.55rem;
-  white-space: nowrap;
-  flex-shrink: 0;
-}
-.badge-teal   { background: var(--teal-lt);   color: var(--teal);   }
-.badge-coral  { background: var(--coral-lt);  color: var(--coral);  }
-.badge-gold   { background: var(--gold-lt);   color: var(--gold);   }
-.badge-indigo { background: var(--indigo-lt); color: var(--indigo); }
-.card-body { padding: 0.9rem 1rem; display: flex; flex-direction: column; gap: 0.75rem; }
-.explain { font-size: 0.84rem; color: var(--fg-mid); line-height: 1.55; }
-.explain strong { color: var(--fg); }
-.code-wrap { overflow-x: auto; border-radius: 7px; background: var(--code-bg); }
-.code-wrap pre { margin: 0; padding: 0.75rem 1rem; }
-.code-wrap code {
-  font-family: 'JetBrains Mono', 'Fira Code', monospace;
-  font-size: 0.78rem;
-  line-height: 1.6;
-  color: var(--code-fg);
-  background: transparent !important;
-}
-.key-list { list-style: none; display: flex; flex-direction: column; gap: 0.3rem; }
-.key-list li { font-size: 0.8rem; color: var(--fg-mid); display: flex; gap: 0.4rem; }
-.key-list li::before { content: "→"; color: var(--teal); font-weight: 700; flex-shrink: 0; }
-.key-list li strong { color: var(--fg); }
-.dh-tag {
-  font-size: 0.75rem;
-  color: var(--gold);
-  background: var(--gold-lt);
-  border-radius: 6px;
-  padding: 0.4rem 0.65rem;
-  line-height: 1.4;
-}
-.dh-tag::before { content: "📚 DH use: "; font-weight: 700; }
-.why-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(min(100%, 260px), 1fr));
-  gap: 0.75rem;
-  margin-bottom: 2rem;
-}
-.why-card {
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: 10px;
-  padding: 1rem;
-}
-.why-card h3 { font-size: 0.85rem; font-weight: 700; margin-bottom: 0.4rem; color: var(--fg); }
-.why-card p { font-size: 0.8rem; color: var(--fg-mid); line-height: 1.5; }
-.why-icon { font-size: 1.3rem; margin-bottom: 0.4rem; }
-.hljs-keyword   { color: #cba6f7; }
-.hljs-string    { color: #a6e3a1; }
-.hljs-number    { color: #fab387; }
-.hljs-comment   { color: #6c7086; font-style: italic; }
-.hljs-built_in  { color: #89dceb; }
-.hljs-title.function_ { color: #89b4fa; }
-.hljs-params    { color: #cdd6f4; }
-.hljs-variable  { color: #cdd6f4; }
-.hljs-operator  { color: #89dceb; }
-.session-block { display: none; }
-.session-block.visible { display: block; }
-@media (max-width: 500px) {
-  .cards { grid-template-columns: 1fr; }
-  .why-grid { grid-template-columns: 1fr; }
-}
-</style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Python for Digital Humanities</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+  <style>
+    :root {
+      --bg: #f7f6f2;
+      --surface: #ffffff;
+      --surface-alt: #f3f1ed;
+      --border: #e2dfd8;
+      --fg: #1a1917;
+      --fg-mid: #5a5651;
+      --fg-dim: #9a948d;
+      --teal: #0d6e6e;
+      --teal-deep: #0a5454;
+      --teal-lt: #d4eeee;
+      --coral: #c0462a;
+      --coral-lt: #fce8e3;
+      --gold: #9b6e00;
+      --gold-lt: #fef3d4;
+      --indigo: #3842a0;
+      --indigo-lt: #e8eaf8;
+      --shadow: rgba(12, 18, 28, 0.08);
+      --code-bg: #1e1e2e;
+      --code-fg: #cdd6f4;
+      --locked-overlay: rgba(22, 22, 22, 0.25);
+      --danger: #d63b2f;
+      --success: #1d9b5d;
+      --warning: #c89100;
+      --card-disabled: #dfe0df;
+      --card-disabled-border: #c9c7c2;
+      --lesson-active: #0d6e6e;
+      --lesson-coming: #d8d7d3;
+      --lesson-coming-text: #605c58;
+      --header-gradient: linear-gradient(135deg, #0d6e6e 0%, #0b4f4f 100%);
+      --page-width: 1200px;
+      --radius: 16px;
+      color-scheme: light;
+    }
+
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --bg: #13120f;
+        --surface: #1e1d19;
+        --surface-alt: #24221d;
+        --border: #2e2c27;
+        --fg: #f0ece4;
+        --fg-mid: #9a948d;
+        --fg-dim: #5a5651;
+        --teal: #3dbfbf;
+        --teal-deep: #2ca0a0;
+        --teal-lt: #0d2e2e;
+        --coral: #e8795e;
+        --coral-lt: #2e1510;
+        --gold: #e0b040;
+        --gold-lt: #2a200a;
+        --indigo: #818cf8;
+        --indigo-lt: #1a1d3a;
+        --shadow: rgba(0, 0, 0, 0.28);
+        --code-bg: #12111c;
+        --locked-overlay: rgba(4, 4, 4, 0.40);
+        --card-disabled: #2a2723;
+        --card-disabled-border: #3d3934;
+        --lesson-coming: #2f2d2a;
+        --lesson-coming-text: #b6b0a8;
+        --header-gradient: linear-gradient(135deg, #145c5c 0%, #0c4444 100%);
+        color-scheme: dark;
+      }
+    }
+
+    * { box-sizing: border-box; }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      margin: 0;
+      font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: var(--bg);
+      color: var(--fg);
+      line-height: 1.6;
+    }
+
+    button, input { font: inherit; }
+
+    .hidden { display: none !important; }
+
+    .app-shell {
+      min-height: 100vh;
+      padding: 0 max(16px, 2vw) 42px;
+    }
+
+    .home-page, .lesson-page {
+      max-width: var(--page-width);
+      margin: 0 auto;
+    }
+
+    .top-toolbar {
+      position: sticky;
+      top: 0;
+      z-index: 30;
+      display: flex;
+      justify-content: flex-end;
+      align-items: center;
+      padding: 18px 0 0;
+      background: transparent;
+    }
+
+    .mode-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 12px;
+      border-radius: 999px;
+      border: 1px solid var(--border);
+      background: rgba(255,255,255,0.72);
+      backdrop-filter: blur(6px);
+      font-size: 0.8rem;
+      font-weight: 700;
+      color: var(--fg);
+      box-shadow: 0 6px 18px rgba(17,17,17,0.06);
+    }
+
+    .lock-button {
+      border: 1px solid var(--border);
+      background: rgba(255,255,255,0.75);
+      width: 42px;
+      height: 42px;
+      border-radius: 50%;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.1rem;
+      cursor: pointer;
+      box-shadow: 0 6px 18px rgba(17,17,17,0.06);
+      transition: transform 0.15s ease, filter 0.15s ease;
+    }
+
+    .lock-button:hover { transform: translateY(-1px); }
+
+    .lock-button:active { transform: translateY(0); }
+
+    .mode-badge.student {
+      color: var(--success);
+      background: rgba(29,155,93,0.12);
+      border-color: rgba(29,155,93,0.35);
+    }
+
+    .mode-badge.teacher {
+      color: var(--warning);
+      background: rgba(200,145,0,0.12);
+      border-color: rgba(200,145,0,0.38);
+    }
+
+    .mode-badge.locked {
+      color: var(--danger);
+      background: rgba(214,59,47,0.11);
+      border-color: rgba(214,59,47,0.28);
+    }
+
+    .home-header {
+      background: var(--header-gradient);
+      color: white;
+      border-radius: 18px;
+      padding: 36px clamp(18px, 3vw, 36px) 30px;
+      box-shadow: 0 12px 28px rgba(13, 110, 110, 0.18);
+      margin-top: 14px;
+    }
+
+    .home-header h1 {
+      margin: 0;
+      font-size: clamp(2rem, 4vw, 3rem);
+      line-height: 1.15;
+      letter-spacing: -0.04em;
+    }
+
+    .home-header p {
+      margin: 12px 0 0;
+      opacity: 0.94;
+      font-size: 1.04rem;
+    }
+
+    .home-header .subtitle {
+      margin-top: 8px;
+      font-weight: 500;
+    }
+
+    .home-grid {
+      margin-top: 26px;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 18px;
+    }
+
+    .lesson-card {
+      position: relative;
+      border-radius: var(--radius);
+      background: var(--surface);
+      border: 1px solid var(--border);
+      box-shadow: 0 8px 20px var(--shadow);
+      overflow: hidden;
+      min-height: 180px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      transition: transform 0.15s ease, box-shadow 0.15s ease, border-color 0.15s ease;
+    }
+
+    .lesson-card.clickable {
+      cursor: pointer;
+    }
+
+    .lesson-card.clickable:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 14px 28px var(--shadow);
+      border-color: rgba(13,110,110,0.38);
+    }
+
+    .lesson-card.active {
+      background: linear-gradient(180deg, #0d6e6e, #0b5a5a);
+      border-color: transparent;
+      color: white;
+    }
+
+    .lesson-card.active .lesson-meta,
+    .lesson-card.active .lesson-title,
+    .lesson-card.active .lesson-tag {
+      color: white;
+    }
+
+    .lesson-card.locked {
+      background: var(--lesson-coming);
+      border-color: var(--lesson-coming-border, var(--card-disabled-border));
+      color: var(--lesson-coming-text);
+      cursor: default;
+    }
+
+    .lesson-card.locked:hover {
+      transform: none;
+      box-shadow: 0 8px 20px var(--shadow);
+    }
+
+    .lesson-card.locked .lesson-tag {
+      color: var(--lesson-coming-text);
+    }
+
+    .lesson-card.locked .lesson-title {
+      color: var(--lesson-coming-text);
+    }
+
+    .lesson-card .card-content {
+      padding: 18px 18px 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      height: 100%;
+    }
+
+    .lesson-meta {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 8px;
+      color: var(--fg-mid);
+      font-size: 0.8rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    .lesson-title {
+      font-size: clamp(1.06rem, 2vw, 1.42rem);
+      line-height: 1.3;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      margin: 0;
+      color: var(--fg);
+    }
+
+    .lesson-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 0.78rem;
+      font-weight: 700;
+      color: var(--teal);
+      background: rgba(13,110,110,0.08);
+      border-radius: 999px;
+      padding: 7px 10px;
+      width: fit-content;
+    }
+
+    .lesson-card.locked .lesson-tag {
+      background: rgba(96, 92, 88, 0.08);
+    }
+
+    .lesson-card.active .lesson-tag {
+      background: rgba(255,255,255,0.14);
+      color: white;
+    }
+
+    .lesson-lock-icon {
+      font-size: 1rem;
+      opacity: 0.9;
+    }
+
+    .lesson-page-header {
+      background: var(--header-gradient);
+      color: white;
+      border-radius: 18px;
+      padding: 26px clamp(18px, 3vw, 35px) 20px;
+      margin-top: 14px;
+      box-shadow: 0 12px 28px rgba(13, 110, 110, 0.18);
+    }
+
+    .header-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 18px;
+      flex-wrap: wrap;
+    }
+
+    .page-heading h1 {
+      margin: 0;
+      font-size: clamp(1.7rem, 3vw, 2.8rem);
+      line-height: 1.15;
+      letter-spacing: -0.04em;
+    }
+
+    .page-heading .subtitle {
+      margin-top: 8px;
+      opacity: 0.9;
+      font-size: 1rem;
+    }
+
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .back-button, .teacher-action {
+      background: rgba(255,255,255,0.12);
+      border: 1px solid rgba(255,255,255,0.24);
+      color: white;
+      border-radius: 999px;
+      padding: 10px 16px;
+      cursor: pointer;
+      font-weight: 700;
+      transition: background 0.15s ease, transform 0.15s ease;
+    }
+
+    .back-button:hover, .teacher-action:hover {
+      background: rgba(255,255,255,0.2);
+      transform: translateY(-1px);
+    }
+
+    .teacher-actions-row {
+      margin-top: 18px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+      opacity: 0;
+      pointer-events: none;
+      max-height: 0;
+      overflow: hidden;
+      transition: opacity 0.2s ease, max-height 0.2s ease;
+    }
+
+    .teacher-actions-row.visible {
+      opacity: 1;
+      pointer-events: auto;
+      max-height: 200px;
+    }
+
+    .teacher-action-secondary {
+      background: rgba(255,255,255,0.12);
+      border: 1px solid rgba(255,255,255,0.24);
+      color: white;
+      border-radius: 10px;
+      padding: 9px 12px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    .content-shell {
+      position: relative;
+      padding-top: 18px;
+    }
+
+    .session-tabs {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin: 12px 0 0;
+    }
+
+    .session-tab {
+      background: rgba(255,255,255,0.12);
+      color: white;
+      border: 1px solid rgba(255,255,255,0.24);
+      border-radius: 999px;
+      padding: 9px 14px;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      cursor: pointer;
+      transition: background 0.15s ease, transform 0.15s ease;
+    }
+
+    .session-tab.active {
+      background: rgba(255,255,255,0.28);
+    }
+
+    .session-tab:hover {
+      transform: translateY(-1px);
+    }
+
+    .dh-banner {
+      background: var(--gold-lt);
+      border: 1px solid var(--gold);
+      border-radius: 10px;
+      padding: 1.1rem 1.25rem;
+      margin: 1.4rem 0 1.8rem;
+      display: flex;
+      gap: 0.75rem;
+      align-items: flex-start;
+    }
+
+    .dh-banner-icon { font-size: 1.5rem; line-height: 1; flex-shrink: 0; }
+
+    .dh-banner-text strong {
+      display: block;
+      color: var(--gold);
+      font-size: 0.75rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      margin-bottom: 0.2rem;
+    }
+
+    .dh-banner-text p { 
+      font-size: 0.9rem;
+      color: var(--fg);
+      line-height: 1.5;
+      margin: 0;
+    }
+
+    .session-block { display: none; }
+    .session-block.visible { display: block; }
+
+    .section-label {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      margin: 2rem 0 1rem;
+    }
+
+    .section-label h2 {
+      font-size: 1rem;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--fg-mid);
+      white-space: nowrap;
+      margin: 0;
+    }
+
+    .section-label::after {
+      content: "";
+      flex: 1;
+      height: 1px;
+      background: var(--border);
+    }
+
+    .cards {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(min(100%, 420px), 1fr));
+      gap: 1rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .card {
+      position: relative;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      overflow: hidden;
+      transition: filter 0.18s ease, transform 0.15s ease, border-color 0.15s ease;
+    }
+
+    .card:hover {
+      border-color: rgba(13,110,110,0.38);
+    }
+
+    .card.locked {
+      filter: blur(0.55px);
+      opacity: 0.95;
+    }
+
+    .card-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0.65rem 1rem;
+      border-bottom: 1px solid var(--border);
+      gap: 0.5rem;
+    }
+
+    .card-title { 
+      font-size: 0.82rem;
+      font-weight: 700;
+      color: var(--fg);
+    }
+
+    .ex-badge {
+      font-size: 0.7rem;
+      font-weight: 600;
+      letter-spacing: 0.05em;
+      border-radius: 999px;
+      padding: 0.15rem 0.55rem;
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+
+    .badge-teal { background: var(--teal-lt); color: var(--teal); }
+    .badge-coral { background: var(--coral-lt); color: var(--coral); }
+    .badge-gold { background: var(--gold-lt); color: var(--gold); }
+    .badge-indigo { background: var(--indigo-lt); color: var(--indigo); }
+
+    .card-body {
+      padding: 0.9rem 1rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+    }
+
+    .explain {
+      font-size: 0.84rem;
+      color: var(--fg-mid);
+      line-height: 1.55;
+    }
+
+    .explain strong { color: var(--fg); }
+
+    .code-wrap {
+      overflow-x: auto;
+      border-radius: 7px;
+      background: var(--code-bg);
+      border: 1px solid rgba(0,0,0,0.15);
+    }
+
+    .code-wrap pre {
+      margin: 0;
+      padding: 0.75rem 1rem;
+    }
+
+    .code-wrap code {
+      font-family: 'JetBrains Mono', 'Fira Code', monospace;
+      font-size: 0.78rem;
+      line-height: 1.6;
+      color: var(--code-fg);
+      background: transparent !important;
+    }
+
+    .key-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 0.3rem;
+      padding: 0;
+      margin: 0;
+    }
+
+    .key-list li {
+      font-size: 0.8rem;
+      color: var(--fg-mid);
+      display: flex;
+      gap: 0.4rem;
+    }
+
+    .key-list li::before {
+      content: "→";
+      color: var(--teal);
+      font-weight: 700;
+      flex-shrink: 0;
+    }
+
+    .key-list li strong { color: var(--fg); }
+
+    .dh-tag {
+      font-size: 0.75rem;
+      color: var(--gold);
+      background: var(--gold-lt);
+      border-radius: 6px;
+      padding: 0.4rem 0.65rem;
+      line-height: 1.4;
+      border: 1px solid rgba(155, 110, 0, 0.18);
+    }
+
+    .dh-tag::before { content: "📚 DH use: "; font-weight: 700; }
+
+    .why-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(min(100%, 260px), 1fr));
+      gap: 0.75rem;
+      margin-bottom: 2rem;
+    }
+
+    .why-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 1rem;
+    }
+
+    .why-card h3 {
+      font-size: 0.85rem;
+      font-weight: 700;
+      margin: 0 0 0.4rem;
+      color: var(--fg);
+    }
+
+    .why-card p {
+      font-size: 0.8rem;
+      color: var(--fg-mid);
+      line-height: 1.5;
+      margin: 0;
+    }
+
+    .why-icon { font-size: 1.3rem; margin-bottom: 0.4rem; }
+
+    .locked-overlay {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      background: var(--locked-overlay);
+      color: #fff;
+      text-align: center;
+      font-weight: 700;
+      font-size: 0.8rem;
+      letter-spacing: 0.02em;
+      padding: 12px;
+      backdrop-filter: blur(2px);
+      user-select: none;
+      pointer-events: none;
+    }
+
+    .lock-overlay-icon {
+      font-size: 1.4rem;
+    }
+
+    .toggle-lock-btn {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      z-index: 5;
+      border: 1px solid rgba(255,255,255,0.28);
+      border-radius: 999px;
+      padding: 5px 8px;
+      font-size: 0.72rem;
+      font-weight: 700;
+      cursor: pointer;
+      background: rgba(13,110,110,0.14);
+      color: var(--teal);
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.15s ease, transform 0.15s ease;
+    }
+
+    .card.teacher-visible .toggle-lock-btn {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .toggle-lock-btn:hover { transform: translateY(-1px); }
+
+    .modal {
+      position: fixed;
+      inset: 0;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      background: rgba(12, 15, 18, 0.5);
+      backdrop-filter: blur(4px);
+      z-index: 100;
+      padding: 18px;
+    }
+
+    .modal.visible { display: flex; }
+
+    .modal-card {
+      width: min(460px, 100%);
+      background: var(--surface);
+      border: 1px solid var(--border);
+      box-shadow: 0 18px 50px rgba(0,0,0,0.25);
+      border-radius: 18px;
+      padding: 22px;
+    }
+
+    .modal-card h3 {
+      margin: 4px 0 8px;
+      font-size: 1.3rem;
+      letter-spacing: -0.02em;
+    }
+
+    .modal-card p {
+      margin: 0 0 16px;
+      color: var(--fg-mid);
+      font-size: 0.95rem;
+    }
+
+    .password-input {
+      width: 100%;
+      border: 1px solid var(--border);
+      background: var(--surface-alt);
+      color: var(--fg);
+      border-radius: 10px;
+      padding: 12px 14px;
+      font-size: 1rem;
+      margin-bottom: 12px;
+    }
+
+    .password-actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: 10px;
+      margin-top: 12px;
+    }
+
+    .secondary-btn,
+    .primary-btn {
+      border-radius: 10px;
+      padding: 10px 14px;
+      font-weight: 700;
+      cursor: pointer;
+      border: 1px solid var(--border);
+    }
+
+    .secondary-btn {
+      background: transparent;
+      color: var(--fg);
+    }
+
+    .primary-btn {
+      background: var(--teal);
+      color: white;
+      border-color: var(--teal);
+    }
+
+    .password-feedback {
+      min-height: 18px;
+      margin-top: 8px;
+      color: var(--danger);
+      font-size: 0.85rem;
+      font-weight: 600;
+    }
+
+    @media (max-width: 680px) {
+      .top-toolbar {
+        justify-content: space-between;
+      }
+
+      .lesson-page-header {
+        padding-top: 18px;
+      }
+
+      .header-row {
+        align-items: stretch;
+      }
+
+      .header-actions {
+        width: 100%;
+        justify-content: space-between;
+      }
+
+      .session-tab {
+        flex: 1 1 auto;
+        text-align: center;
+      }
+
+      .cards {
+        grid-template-columns: 1fr;
+      }
+
+      .why-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      * { scroll-behavior: auto; }
+      .lesson-card, .session-tab, .lock-button, .back-button,
+      .teacher-action, .teacher-action-secondary, .toggle-lock-btn {
+        transition: none;
+      }
+    }
+  </style>
 </head>
 <body>
-
-<div class="page-header">
-  <h1>Python for Digital Humanities</h1>
-  <p class="subtitle">Cheat Sheet · Sessions 01 &amp; 02 · Google Colab / GitHub Codespaces</p>
-  <div class="session-tabs">
-    <button class="session-tab active" onclick="show('s1', this)">Session 01 — Python Basics</button>
-    <button class="session-tab" onclick="show('s2', this)">Session 02 — Word Clouds</button>
-    <button class="session-tab" onclick="show('why', this)">Why This Matters</button>
-  </div>
-</div>
-
-<!-- WHY DH -->
-<div id="why" class="session-block">
-  <div class="dh-banner">
-    <div class="dh-banner-icon">🎓</div>
-    <div class="dh-banner-text">
-      <strong>Why Python in Digital Humanities?</strong>
-      <p>Humanities research has always been about texts, archives, images, and patterns in human culture. Python lets you work with these at scale — reading thousands of documents, finding patterns across corpora, and visualising language — things impossible by hand alone.</p>
+  <div class="app-shell">
+    <div class="top-toolbar">
+      <button id="lockButton" class="lock-button" aria-label="Open password lock">🔒</button>
+      <div id="modeBadge" class="mode-badge locked">🔴 Locked</div>
     </div>
-  </div>
-  <div class="why-grid">
-    <div class="why-card"><div class="why-icon">📖</div><h3>Text Analysis at Scale</h3><p>Literature, history, journalism — Python can read entire archives in seconds, counting words, tracking themes, and finding patterns that would take human readers years.</p></div>
-    <div class="why-card"><div class="why-icon">🗺️</div><h3>Corpus Linguistics</h3><p>Linguists use loops and string operations to study how language changes over time — which words appear together, how sentences are structured across dialects and eras.</p></div>
-    <div class="why-card"><div class="why-icon">🏛️</div><h3>Archive Processing</h3><p>Historians process digitised newspapers, letters, and records. Variables store data; loops process thousands of documents; conditions filter relevant entries.</p></div>
-    <div class="why-card"><div class="why-icon">🎨</div><h3>Visual Storytelling</h3><p>Word clouds turn raw text into visual arguments — a tool for communicating findings to non-technical audiences, used in journalism, public history, and education.</p></div>
-    <div class="why-card"><div class="why-icon">🔍</div><h3>Critical Search</h3><p>Filtering with conditions (if/else) mirrors archival source criticism: not all data is relevant. Code makes selection criteria explicit and reproducible.</p></div>
-    <div class="why-card"><div class="why-icon">🤝</div><h3>Open &amp; Reproducible</h3><p>Python is free, widely taught, and runs in a browser via Colab. Sharing a notebook means sharing the method — making humanities research as transparent as a footnote.</p></div>
-  </div>
-</div>
 
-<!-- SESSION 01 -->
-<div id="s1" class="session-block visible">
-  <div class="dh-banner">
-    <div class="dh-banner-icon">🧱</div>
-    <div class="dh-banner-text">
-      <strong>Session 01 — The building blocks</strong>
-      <p>These exercises cover the core ideas all programming is built on: arithmetic, variables, loops, conditions, and string operations. In Digital Humanities, these become tools for working with words, sentences, and collections of texts.</p>
-    </div>
-  </div>
+    <main>
+      <section id="homePage" class="home-page">
+        <header class="home-header">
+          <h1>Python for Digital Humanities</h1>
+          <p class="subtitle">A 12-lesson course portal for text analysis, corpus work, and digital storytelling.</p>
+          <p>Developed by Liyanachchi Mahesha Harshani De Silva</p>
+        </header>
 
-  <div class="section-label"><h2>Arithmetic &amp; Variables</h2></div>
-  <div class="cards">
-    <div class="card">
-      <div class="card-head"><span class="card-title">Arithmetic</span><span class="ex-badge badge-teal">Ex 01</span></div>
-      <div class="card-body">
-        <p class="explain">Python as a calculator. The result appears immediately — good for testing ideas quickly.</p>
-        <div class="code-wrap"><pre><code class="language-python">3 + 2</code></pre></div>
-        <ul class="key-list">
-          <li><strong>+  –  *  /  //  %  **</strong> — basic operators</li>
-          <li><strong>//</strong> integer division &nbsp;·&nbsp; <strong>%</strong> remainder &nbsp;·&nbsp; <strong>**</strong> power</li>
-        </ul>
-        <div class="dh-tag">Counting word frequencies, page numbers, years between dates</div>
-      </div>
-    </div>
-    <div class="card">
-      <div class="card-head"><span class="card-title">Variables &amp; Strings</span><span class="ex-badge badge-teal">Ex 02</span></div>
-      <div class="card-body">
-        <p class="explain">A <strong>variable</strong> stores a value and gives it a name. <strong>Strings</strong> are text wrapped in quotes. <code>+</code> joins strings together.</p>
-        <div class="code-wrap"><pre><code class="language-python">first_name = "Juku"
+        <div class="home-grid" aria-label="Course lessons">
+          <article class="lesson-card locked" aria-disabled="true">
+            <div class="card-content">
+              <div class="lesson-meta"><span>Lesson 01</span></div>
+              <h2 class="lesson-title">Coming Soon</h2>
+              <div class="lesson-tag"><span class="lesson-lock-icon">🔒</span> Locked</div>
+            </div>
+          </article>
+
+          <article class="lesson-card locked" aria-disabled="true">
+            <div class="card-content">
+              <div class="lesson-meta"><span>Lesson 02</span></div>
+              <h2 class="lesson-title">Coming Soon</h2>
+              <div class="lesson-tag"><span class="lesson-lock-icon">🔒</span> Locked</div>
+            </div>
+          </article>
+
+          <article class="lesson-card locked" aria-disabled="true">
+            <div class="card-content">
+              <div class="lesson-meta"><span>Lesson 03</span></div>
+              <h2 class="lesson-title">Coming Soon</h2>
+              <div class="lesson-tag"><span class="lesson-lock-icon">🔒</span> Locked</div>
+            </div>
+          </article>
+
+          <article class="lesson-card locked" aria-disabled="true">
+            <div class="card-content">
+              <div class="lesson-meta"><span>Lesson 04</span></div>
+              <h2 class="lesson-title">Coming Soon</h2>
+              <div class="lesson-tag"><span class="lesson-lock-icon">🔒</span> Locked</div>
+            </div>
+          </article>
+
+          <article class="lesson-card locked" aria-disabled="true">
+            <div class="card-content">
+              <div class="lesson-meta"><span>Lesson 05</span></div>
+              <h2 class="lesson-title">Coming Soon</h2>
+              <div class="lesson-tag"><span class="lesson-lock-icon">🔒</span> Locked</div>
+            </div>
+          </article>
+
+          <article class="lesson-card locked" aria-disabled="true">
+            <div class="card-content">
+              <div class="lesson-meta"><span>Lesson 06</span></div>
+              <h2 class="lesson-title">Coming Soon</h2>
+              <div class="lesson-tag"><span class="lesson-lock-icon">🔒</span> Locked</div>
+            </div>
+          </article>
+
+          <article class="lesson-card locked" aria-disabled="true">
+            <div class="card-content">
+              <div class="lesson-meta"><span>Lesson 07</span></div>
+              <h2 class="lesson-title">Coming Soon</h2>
+              <div class="lesson-tag"><span class="lesson-lock-icon">🔒</span> Locked</div>
+            </div>
+          </article>
+
+          <article class="lesson-card locked" aria-disabled="true">
+            <div class="card-content">
+              <div class="lesson-meta"><span>Lesson 08</span></div>
+              <h2 class="lesson-title">Coming Soon</h2>
+              <div class="lesson-tag"><span class="lesson-lock-icon">🔒</span> Locked</div>
+            </div>
+          </article>
+
+          <article class="lesson-card locked" aria-disabled="true">
+            <div class="card-content">
+              <div class="lesson-meta"><span>Lesson 09</span></div>
+              <h2 class="lesson-title">Coming Soon</h2>
+              <div class="lesson-tag"><span class="lesson-lock-icon">🔒</span> Locked</div>
+            </div>
+          </article>
+
+          <article class="lesson-card active clickable" data-lesson="10" tabindex="0" role="button" aria-label="Open Lesson 10: Python Basics and Word Clouds">
+            <div class="card-content">
+              <div class="lesson-meta"><span>Lesson 10</span><span>Active</span></div>
+              <h2 class="lesson-title">Python Basics &amp; Word Clouds</h2>
+              <div class="lesson-tag"><span class="lesson-lock-icon">▶</span> Open Lesson</div>
+            </div>
+          </article>
+
+          <article class="lesson-card locked" aria-disabled="true">
+            <div class="card-content">
+              <div class="lesson-meta"><span>Lesson 11</span></div>
+              <h2 class="lesson-title">Coming Soon</h2>
+              <div class="lesson-tag"><span class="lesson-lock-icon">🔒</span> Locked</div>
+            </div>
+          </article>
+
+          <article class="lesson-card locked" aria-disabled="true">
+            <div class="card-content">
+              <div class="lesson-meta"><span>Lesson 12</span></div>
+              <h2 class="lesson-title">Coming Soon</h2>
+              <div class="lesson-tag"><span class="lesson-lock-icon">🔒</span> Locked</div>
+            </div>
+          </article>
+        </div>
+      </section>
+
+      <section id="lessonPage" class="lesson-page hidden">
+        <div class="lesson-page-header">
+          <div class="header-row">
+            <div class="page-heading">
+              <h1>Python for Digital Humanities</h1>
+              <div class="subtitle">Cheat Sheet · Sessions 01 &amp; 02 · Google Colab / GitHub Codespaces</div>
+            </div>
+            <div class="header-actions">
+              <button id="backButton" class="back-button" type="button">← Back to Home</button>
+            </div>
+          </div>
+
+          <div class="session-tabs">
+            <button class="session-tab active" type="button" data-tab="why">Why This Matters</button>
+            <button class="session-tab" type="button" data-tab="s1">Session 01 — Python Basics</button>
+            <button class="session-tab" type="button" data-tab="s2">Session 02 — Word Clouds</button>
+          </div>
+
+          <div id="teacherActions" class="teacher-actions-row">
+            <button id="unlockAllBtn" class="teacher-action-secondary" type="button">Unlock All</button>
+            <button id="lockAllBtn" class="teacher-action-secondary" type="button">Lock All</button>
+          </div>
+        </div>
+
+        <div class="content-shell">
+          <div id="why" class="session-block visible">
+            <div class="dh-banner">
+              <div class="dh-banner-icon">🎓</div>
+              <div class="dh-banner-text">
+                <strong>Why Python in Digital Humanities?</strong>
+                <p>Humanities research has always been about texts, archives, images, and patterns in human culture. Python lets you work with these at scale — reading thousands of documents, finding patterns across corpora, and visualising language — things impossible by hand alone.</p>
+              </div>
+            </div>
+            <div class="why-grid">
+              <div class="why-card"><div class="why-icon">📖</div><h3>Text Analysis at Scale</h3><p>Literature, history, journalism — Python can read entire archives in seconds, counting words, tracking themes, and finding patterns that would take human readers years.</p></div>
+              <div class="why-card"><div class="why-icon">🗺️</div><h3>Corpus Linguistics</h3><p>Linguists use loops and string operations to study how language changes over time — which words appear together, how sentences are structured across dialects and eras.</p></div>
+              <div class="why-card"><div class="why-icon">🏛️</div><h3>Archive Processing</h3><p>Historians process digitised newspapers, letters, and records. Variables store data; loops process thousands of documents; conditions filter relevant entries.</p></div>
+              <div class="why-card"><div class="why-icon">🎨</div><h3>Visual Storytelling</h3><p>Word clouds turn raw text into visual arguments — a tool for communicating findings to non-technical audiences, used in journalism, public history, and education.</p></div>
+              <div class="why-card"><div class="why-icon">🔍</div><h3>Critical Search</h3><p>Filtering with conditions (if/else) mirrors archival source criticism: not all data is relevant. Code makes selection criteria explicit and reproducible.</p></div>
+              <div class="why-card"><div class="why-icon">🤝</div><h3>Open &amp; Reproducible</h3><p>Python is free, widely taught, and runs in a browser via Colab. Sharing a notebook means sharing the method — making humanities research as transparent as a footnote.</p></div>
+            </div>
+          </div>
+
+          <div id="s1" class="session-block">
+            <div class="dh-banner">
+              <div class="dh-banner-icon">🧱</div>
+              <div class="dh-banner-text">
+                <strong>Session 01 — The building blocks</strong>
+                <p>These exercises cover the core ideas all programming is built on: arithmetic, variables, loops, conditions, and string operations. In Digital Humanities, these become tools for working with words, sentences, and collections of texts.</p>
+              </div>
+            </div>
+
+            <div class="section-label"><h2>Arithmetic &amp; Variables</h2></div>
+            <div class="cards">
+              <div class="card" data-exercise="1">
+                <button class="toggle-lock-btn" type="button">🔓 Unlock</button>
+                <div class="card-head"><span class="card-title">Arithmetic</span><span class="ex-badge badge-teal">Ex 01</span></div>
+                <div class="card-body">
+                  <p class="explain">Python as a calculator. The result appears immediately — good for testing ideas quickly.</p>
+                  <div class="code-wrap"><pre><code class="language-python">3 + 2</code></pre></div>
+                  <ul class="key-list">
+                    <li><strong>+  –  *  /  //  %  **</strong> — basic operators</li>
+                    <li><strong>//</strong> integer division &nbsp;·&nbsp; <strong>%</strong> remainder &nbsp;·&nbsp; <strong>**</strong> power</li>
+                  </ul>
+                  <div class="dh-tag">Counting word frequencies, page numbers, years between dates</div>
+                </div>
+              </div>
+              <div class="card" data-exercise="2">
+                <button class="toggle-lock-btn" type="button">🔓 Unlock</button>
+                <div class="card-head"><span class="card-title">Variables &amp; Strings</span><span class="ex-badge badge-teal">Ex 02</span></div>
+                <div class="card-body">
+                  <p class="explain">A <strong>variable</strong> stores a value and gives it a name. <strong>Strings</strong> are text wrapped in quotes. <code>+</code> joins strings together.</p>
+                  <div class="code-wrap"><pre><code class="language-python">first_name = "Juku"
 print("Hello, " + first_name)</code></pre></div>
-        <ul class="key-list">
-          <li><strong>=</strong> assigns a value to a name</li>
-          <li><strong>print()</strong> displays the result</li>
-          <li>Strings use <strong>" "</strong> or <strong>' '</strong> quotes</li>
-        </ul>
-        <div class="dh-tag">Storing an author's name, a book title, a date, a source URL</div>
-      </div>
-    </div>
-  </div>
+                  <ul class="key-list">
+                    <li><strong>=</strong> assigns a value to a name</li>
+                    <li><strong>print()</strong> displays the result</li>
+                    <li>Strings use <strong>" "</strong> or <strong>' '</strong> quotes</li>
+                  </ul>
+                  <div class="dh-tag">Storing an author's name, a book title, a date, a source URL</div>
+                </div>
+              </div>
+            </div>
 
-  <div class="section-label"><h2>Loops</h2></div>
-  <div class="cards">
-    <div class="card">
-      <div class="card-head"><span class="card-title">Loop over numbers</span><span class="ex-badge badge-coral">Ex 03</span></div>
-      <div class="card-body">
-        <p class="explain"><code>range(5)</code> produces 0, 1, 2, 3, 4. The loop runs the indented block once per value.</p>
-        <div class="code-wrap"><pre><code class="language-python">for number in range(5):
+            <div class="section-label"><h2>Loops</h2></div>
+            <div class="cards">
+              <div class="card" data-exercise="3">
+                <button class="toggle-lock-btn" type="button">🔓 Unlock</button>
+                <div class="card-head"><span class="card-title">Loop over numbers</span><span class="ex-badge badge-coral">Ex 03</span></div>
+                <div class="card-body">
+                  <p class="explain"><code>range(5)</code> produces 0, 1, 2, 3, 4. The loop runs the indented block once per value.</p>
+                  <div class="code-wrap"><pre><code class="language-python">for number in range(5):
     print(number)</code></pre></div>
-        <ul class="key-list">
-          <li><strong>for … in …:</strong> — the loop structure</li>
-          <li><strong>range(n)</strong> — integers from 0 to n–1</li>
-          <li>Indentation (4 spaces) marks the loop body</li>
-        </ul>
-        <div class="dh-tag">Numbering pages, iterating over years, processing rows in a dataset</div>
-      </div>
-    </div>
-    <div class="card">
-      <div class="card-head"><span class="card-title">Loop over characters</span><span class="ex-badge badge-coral">Ex 04</span></div>
-      <div class="card-body">
-        <p class="explain">You can loop over any sequence — including the letters in a string, one at a time.</p>
-        <div class="code-wrap"><pre><code class="language-python">for letter in first_name:
+                  <ul class="key-list">
+                    <li><strong>for … in …:</strong> — the loop structure</li>
+                    <li><strong>range(n)</strong> — integers from 0 to n–1</li>
+                    <li>Indentation (4 spaces) marks the loop body</li>
+                  </ul>
+                  <div class="dh-tag">Numbering pages, iterating over years, processing rows in a dataset</div>
+                </div>
+              </div>
+              <div class="card" data-exercise="4">
+                <button class="toggle-lock-btn" type="button">🔓 Unlock</button>
+                <div class="card-head"><span class="card-title">Loop over characters</span><span class="ex-badge badge-coral">Ex 04</span></div>
+                <div class="card-body">
+                  <p class="explain">You can loop over any sequence — including the letters in a string, one at a time.</p>
+                  <div class="code-wrap"><pre><code class="language-python">for letter in first_name:
     print(letter)</code></pre></div>
-        <ul class="key-list">
-          <li>A string is a sequence of characters</li>
-          <li>Same <code>for … in …</code> pattern as Ex 03</li>
-        </ul>
-        <div class="dh-tag">Reading a text character by character — useful for encoding detection, transliteration</div>
-      </div>
-    </div>
-  </div>
+                  <ul class="key-list">
+                    <li>A string is a sequence of characters</li>
+                    <li>Same <code>for … in …</code> pattern as Ex 03</li>
+                  </ul>
+                  <div class="dh-tag">Reading a text character by character — useful for encoding detection, transliteration</div>
+                </div>
+              </div>
+            </div>
 
-  <div class="section-label"><h2>Conditions</h2></div>
-  <div class="cards">
-    <div class="card">
-      <div class="card-head"><span class="card-title">if / else</span><span class="ex-badge badge-gold">Ex 05</span></div>
-      <div class="card-body">
-        <p class="explain">Make a decision based on a condition. If the condition is true, run the first block; otherwise, run the else block.</p>
-        <div class="code-wrap"><pre><code class="language-python">age = 8
+            <div class="section-label"><h2>Conditions</h2></div>
+            <div class="cards">
+              <div class="card" data-exercise="5">
+                <button class="toggle-lock-btn" type="button">🔓 Unlock</button>
+                <div class="card-head"><span class="card-title">if / else</span><span class="ex-badge badge-gold">Ex 05</span></div>
+                <div class="card-body">
+                  <p class="explain">Make a decision based on a condition. If the condition is true, run the first block; otherwise, run the else block.</p>
+                  <div class="code-wrap"><pre><code class="language-python">age = 8
 if age <= 7:
     print("Free")
 else:
     print("Buy a ticket")</code></pre></div>
-        <ul class="key-list">
-          <li><strong>&lt;=  &gt;=  ==  !=  &lt;  &gt;</strong> — comparison operators</li>
-          <li>== checks equality (not = which assigns)</li>
-        </ul>
-        <div class="dh-tag">Filtering sources by date, selecting texts from a certain period</div>
-      </div>
-    </div>
-    <div class="card">
-      <div class="card-head"><span class="card-title">Nested if / else</span><span class="ex-badge badge-gold">Ex 06</span></div>
-      <div class="card-body">
-        <p class="explain">Conditions can nest inside each other, creating multiple decision paths.</p>
-        <div class="code-wrap"><pre><code class="language-python">age = 8
+                  <ul class="key-list">
+                    <li><strong>&lt;=  &gt;=  ==  !=  &lt;  &gt;</strong> — comparison operators</li>
+                    <li>== checks equality (not = which assigns)</li>
+                  </ul>
+                  <div class="dh-tag">Filtering sources by date, selecting texts from a certain period</div>
+                </div>
+              </div>
+              <div class="card" data-exercise="6">
+                <button class="toggle-lock-btn" type="button">🔓 Unlock</button>
+                <div class="card-head"><span class="card-title">Nested if / else</span><span class="ex-badge badge-gold">Ex 06</span></div>
+                <div class="card-body">
+                  <p class="explain">Conditions can nest inside each other, creating multiple decision paths.</p>
+                  <div class="code-wrap"><pre><code class="language-python">age = 8
 if age <= 7:
     print("Free")
 else:
@@ -359,22 +1075,23 @@ else:
         print("child ticket")
     else:
         print("full ticket")</code></pre></div>
-        <ul class="key-list">
-          <li>Each level of nesting adds 4 more spaces</li>
-          <li>Use <strong>elif</strong> to chain conditions cleanly</li>
-        </ul>
-        <div class="dh-tag">Classifying texts by era, genre, or word count across multiple categories</div>
-      </div>
-    </div>
-  </div>
+                  <ul class="key-list">
+                    <li>Each level of nesting adds 4 more spaces</li>
+                    <li>Use <strong>elif</strong> to chain conditions cleanly</li>
+                  </ul>
+                  <div class="dh-tag">Classifying texts by era, genre, or word count across multiple categories</div>
+                </div>
+              </div>
+            </div>
 
-  <div class="section-label"><h2>String Slicing</h2></div>
-  <div class="cards">
-    <div class="card">
-      <div class="card-head"><span class="card-title">Slicing a string</span><span class="ex-badge badge-indigo">Ex 07</span></div>
-      <div class="card-body">
-        <p class="explain">Extract any part of a string using <code>[start:end:step]</code>. Indices start at 0; negative indices count from the end.</p>
-        <div class="code-wrap"><pre><code class="language-python">sentence = "racecarleveldeified"
+            <div class="section-label"><h2>String Slicing</h2></div>
+            <div class="cards">
+              <div class="card" data-exercise="7">
+                <button class="toggle-lock-btn" type="button">🔓 Unlock</button>
+                <div class="card-head"><span class="card-title">Slicing a string</span><span class="ex-badge badge-indigo">Ex 07</span></div>
+                <div class="card-body">
+                  <p class="explain">Extract any part of a string using <code>[start:end:step]</code>. Indices start at 0; negative indices count from the end.</p>
+                  <div class="code-wrap"><pre><code class="language-python">sentence = "racecarleveldeified"
 
 print(sentence[0:3])    # "rac"
 print(sentence[:3])     # "rac"  (start defaults to 0)
@@ -384,19 +1101,20 @@ print(sentence[-1])     # last character
 print(sentence[-4:])    # last 4 characters
 print(sentence[5:][0])  # chain slices
 print(sentence[::2])    # every 2nd character</code></pre></div>
-        <ul class="key-list">
-          <li><strong>[start:end]</strong> — end is <em>not</em> included</li>
-          <li><strong>[-1]</strong> — last character; <strong>[-n:]</strong> — last n characters</li>
-          <li><strong>[::2]</strong> — every other character (step)</li>
-        </ul>
-        <div class="dh-tag">Extracting date components, file name prefixes, citation codes from structured text</div>
-      </div>
-    </div>
-    <div class="card">
-      <div class="card-head"><span class="card-title">Splitting into words</span><span class="ex-badge badge-indigo">Ex 08</span></div>
-      <div class="card-body">
-        <p class="explain"><code>.split()</code> breaks a string into a list of words. Lists can be sliced just like strings.</p>
-        <div class="code-wrap"><pre><code class="language-python">sentence = "Alice went to the park..."
+                  <ul class="key-list">
+                    <li><strong>[start:end]</strong> — end is <em>not</em> included</li>
+                    <li><strong>[-1]</strong> — last character; <strong>[-n:]</strong> — last n characters</li>
+                    <li><strong>[::2]</strong> — every other character (step)</li>
+                  </ul>
+                  <div class="dh-tag">Extracting date components, file name prefixes, citation codes from structured text</div>
+                </div>
+              </div>
+              <div class="card" data-exercise="8">
+                <button class="toggle-lock-btn" type="button">🔓 Unlock</button>
+                <div class="card-head"><span class="card-title">Splitting into words</span><span class="ex-badge badge-indigo">Ex 08</span></div>
+                <div class="card-body">
+                  <p class="explain"><code>.split()</code> breaks a string into a list of words. Lists can be sliced just like strings.</p>
+                  <div class="code-wrap"><pre><code class="language-python">sentence = "Alice went to the park..."
 words = sentence.split(" ")
 
 print(words)         # full list
@@ -406,38 +1124,40 @@ print(words[-3:])    # last 3 words
 print(len(words))    # word count
 print(words[2][0])   # 1st letter of 3rd word
 print(words[-1][-1]) # last letter of last word</code></pre></div>
-        <ul class="key-list">
-          <li><strong>.split(" ")</strong> splits on spaces → list of words</li>
-          <li><strong>len()</strong> counts items in a list</li>
-          <li>Chain: <strong>words[i][j]</strong> — j-th character of i-th word</li>
-        </ul>
-        <div class="dh-tag">Tokenising sentences, counting words in a passage, finding the first word of each sentence</div>
-      </div>
-    </div>
-  </div>
+                  <ul class="key-list">
+                    <li><strong>.split(" ")</strong> splits on spaces → list of words</li>
+                    <li><strong>len()</strong> counts items in a list</li>
+                    <li>Chain: <strong>words[i][j]</strong> — j-th character of i-th word</li>
+                  </ul>
+                  <div class="dh-tag">Tokenising sentences, counting words in a passage, finding the first word of each sentence</div>
+                </div>
+              </div>
+            </div>
 
-  <div class="section-label"><h2>List Comprehensions</h2></div>
-  <div class="cards">
-    <div class="card">
-      <div class="card-head"><span class="card-title">Basic list comprehension</span><span class="ex-badge badge-teal">Ex 09</span></div>
-      <div class="card-body">
-        <p class="explain">A compact way to loop over a list and collect results. This one just reproduces the words, but sets up the pattern.</p>
-        <div class="code-wrap"><pre><code class="language-python">sentence = "When Alice and her younger..."
+            <div class="section-label"><h2>List Comprehensions</h2></div>
+            <div class="cards">
+              <div class="card" data-exercise="9">
+                <button class="toggle-lock-btn" type="button">🔓 Unlock</button>
+                <div class="card-head"><span class="card-title">Basic list comprehension</span><span class="ex-badge badge-teal">Ex 09</span></div>
+                <div class="card-body">
+                  <p class="explain">A compact way to loop over a list and collect results. This one just reproduces the words, but sets up the pattern.</p>
+                  <div class="code-wrap"><pre><code class="language-python">sentence = "When Alice and her younger..."
 words = sentence.split(" ")
 
 print([word for word in words])</code></pre></div>
-        <ul class="key-list">
-          <li>Structure: <strong>[expression for item in list]</strong></li>
-          <li>Returns a new list</li>
-        </ul>
-        <div class="dh-tag">The foundation of text processing — every word in a corpus becomes a data point</div>
-      </div>
-    </div>
-    <div class="card">
-      <div class="card-head"><span class="card-title">Comprehensions with transforms &amp; filters</span><span class="ex-badge badge-teal">Ex 10</span></div>
-      <div class="card-body">
-        <p class="explain">List comprehensions can transform each item and optionally filter with <code>if</code>. Very powerful for text analysis.</p>
-        <div class="code-wrap"><pre><code class="language-python"># First letter of every word
+                  <ul class="key-list">
+                    <li>Structure: <strong>[expression for item in list]</strong></li>
+                    <li>Returns a new list</li>
+                  </ul>
+                  <div class="dh-tag">The foundation of text processing — every word in a corpus becomes a data point</div>
+                </div>
+              </div>
+              <div class="card" data-exercise="10">
+                <button class="toggle-lock-btn" type="button">🔓 Unlock</button>
+                <div class="card-head"><span class="card-title">Comprehensions with transforms &amp; filters</span><span class="ex-badge badge-teal">Ex 10</span></div>
+                <div class="card-body">
+                  <p class="explain">List comprehensions can transform each item and optionally filter with <code>if</code>. Very powerful for text analysis.</p>
+                  <div class="code-wrap"><pre><code class="language-python"># First letter of every word
 [word[0] for word in words]
 
 # Length of every word
@@ -456,107 +1176,111 @@ print([word for word in words])</code></pre></div>
 
 # Reverse the word list
 words[::-1]</code></pre></div>
-        <ul class="key-list">
-          <li>Add <strong>if condition</strong> at the end to filter</li>
-          <li><strong>"sep".join(list)</strong> — joins list into one string</li>
-          <li><strong>[::-1]</strong> — reverses any sequence</li>
-        </ul>
-        <div class="dh-tag">Extract initials, find long words, build concordances, reverse a sentence for analysis</div>
-      </div>
-    </div>
-  </div>
-</div>
+                  <ul class="key-list">
+                    <li>Add <strong>if condition</strong> at the end to filter</li>
+                    <li><strong>"sep".join(list)</strong> — joins list into one string</li>
+                    <li><strong>[::-1]</strong> — reverses any sequence</li>
+                  </ul>
+                  <div class="dh-tag">Extract initials, find long words, build concordances, reverse a sentence for analysis</div>
+                </div>
+              </div>
+            </div>
+          </div>
 
-<!-- SESSION 02 -->
-<div id="s2" class="session-block">
-  <div class="dh-banner">
-    <div class="dh-banner-icon">☁️</div>
-    <div class="dh-banner-text">
-      <strong>Session 02 — Word clouds &amp; text visualisation</strong>
-      <p>These exercises load real text from the web, generate word clouds, apply image masks, filter stopwords, and customise colours — turning a plain text file into a visual argument about its content.</p>
-    </div>
-  </div>
+          <div id="s2" class="session-block">
+            <div class="dh-banner">
+              <div class="dh-banner-icon">☁️</div>
+              <div class="dh-banner-text">
+                <strong>Session 02 — Word clouds &amp; text visualisation</strong>
+                <p>These exercises load real text from the web, generate word clouds, apply image masks, filter stopwords, and customise colours — turning a plain text file into a visual argument about its content.</p>
+              </div>
+            </div>
 
-  <div class="section-label"><h2>Setup &amp; Basic Word Cloud</h2></div>
-  <div class="cards">
-    <div class="card">
-      <div class="card-head"><span class="card-title">Install &amp; first word cloud</span><span class="ex-badge badge-teal">Ex 11</span></div>
-      <div class="card-body">
-        <p class="explain">Install the library once per session (Colab), then generate a word cloud from a string of text and display it as an image.</p>
-        <div class="code-wrap"><pre><code class="language-python">pip install wordcloud
+            <div class="section-label"><h2>Setup &amp; Basic Word Cloud</h2></div>
+            <div class="cards">
+              <div class="card" data-exercise="11">
+                <button class="toggle-lock-btn" type="button">🔓 Unlock</button>
+                <div class="card-head"><span class="card-title">Install &amp; first word cloud</span><span class="ex-badge badge-teal">Ex 11</span></div>
+                <div class="card-body">
+                  <p class="explain">Install the library once per session (Colab), then generate a word cloud from a string of text and display it as an image.</p>
+                  <div class="code-wrap"><pre><code class="language-python">pip install wordcloud
 from wordcloud import WordCloud
 
 wc = WordCloud().generate("rain rain brings hope hope")
 img = wc.to_image()
 img.show()</code></pre></div>
-        <ul class="key-list">
-          <li><strong>pip install</strong> — downloads a library (once per session)</li>
-          <li><strong>from … import …</strong> — brings in just the class you need</li>
-          <li><strong>.generate(text)</strong> — builds the cloud from a string</li>
-          <li><strong>.to_image()</strong> — converts to a viewable image</li>
-        </ul>
-        <div class="dh-tag">First step toward visualising any text corpus — speeches, novels, newspaper archives</div>
-      </div>
-    </div>
-    <div class="card">
-      <div class="card-head"><span class="card-title">Load text from the web</span><span class="ex-badge badge-teal">Ex 12</span></div>
-      <div class="card-body">
-        <p class="explain">Fetch any public text file directly from a URL. Project Gutenberg, government archives, and digitised newspapers are all accessible this way.</p>
-        <div class="code-wrap"><pre><code class="language-python">import urllib.request
+                  <ul class="key-list">
+                    <li><strong>pip install</strong> — downloads a library (once per session)</li>
+                    <li><strong>from … import …</strong> — brings in just the class you need</li>
+                    <li><strong>.generate(text)</strong> — builds the cloud from a string</li>
+                    <li><strong>.to_image()</strong> — converts to a viewable image</li>
+                  </ul>
+                  <div class="dh-tag">First step toward visualising any text corpus — speeches, novels, newspaper archives</div>
+                </div>
+              </div>
+              <div class="card" data-exercise="12">
+                <button class="toggle-lock-btn" type="button">🔓 Unlock</button>
+                <div class="card-head"><span class="card-title">Load text from the web</span><span class="ex-badge badge-teal">Ex 12</span></div>
+                <div class="card-body">
+                  <p class="explain">Fetch any public text file directly from a URL. Project Gutenberg, government archives, and digitised newspapers are all accessible this way.</p>
+                  <div class="code-wrap"><pre><code class="language-python">import urllib.request
 
 text = urllib.request.urlopen(
     "URL of your online text file"
 ).read().decode("utf-8")
 
 text[:50]   # preview first 50 characters</code></pre></div>
-        <ul class="key-list">
-          <li><strong>urllib.request</strong> — built-in Python web fetching</li>
-          <li><strong>.read()</strong> downloads as bytes; <strong>.decode("utf-8")</strong> converts to text</li>
-          <li><strong>text[:50]</strong> — preview without printing everything</li>
-        </ul>
-        <div class="dh-tag">Load historical texts, digitised books, or any corpus hosted online without downloading files</div>
-      </div>
-    </div>
-  </div>
+                  <ul class="key-list">
+                    <li><strong>urllib.request</strong> — built-in Python web fetching</li>
+                    <li><strong>.read()</strong> downloads as bytes; <strong>.decode("utf-8")</strong> converts to text</li>
+                    <li><strong>text[:50]</strong> — preview without printing everything</li>
+                  </ul>
+                  <div class="dh-tag">Load historical texts, digitised books, or any corpus hosted online without downloading files</div>
+                </div>
+              </div>
+            </div>
 
-  <div class="cards">
-    <div class="card">
-      <div class="card-head"><span class="card-title">Word cloud from loaded text</span><span class="ex-badge badge-teal">Ex 13</span></div>
-      <div class="card-body">
-        <p class="explain">Once <code>text</code> is loaded, generating the cloud is a single chained line.</p>
-        <div class="code-wrap"><pre><code class="language-python">WordCloud().generate_from_text(text).to_image()</code></pre></div>
-        <ul class="key-list">
-          <li><strong>.generate_from_text()</strong> — takes a full text string</li>
-          <li>Method chaining: each <strong>.</strong> calls the next step on the result</li>
-        </ul>
-        <div class="dh-tag">Instant visual summary of any document — good for exploring unfamiliar corpora</div>
-      </div>
-    </div>
-    <div class="card">
-      <div class="card-head"><span class="card-title">Stopwords &amp; background colour</span><span class="ex-badge badge-teal">Ex 14</span></div>
-      <div class="card-body">
-        <p class="explain"><strong>Stopwords</strong> are common words (and, the, but…) that carry no meaning and dominate word clouds unless removed.</p>
-        <div class="code-wrap"><pre><code class="language-python">WordCloud(
+            <div class="cards">
+              <div class="card" data-exercise="13">
+                <button class="toggle-lock-btn" type="button">🔓 Unlock</button>
+                <div class="card-head"><span class="card-title">Word cloud from loaded text</span><span class="ex-badge badge-teal">Ex 13</span></div>
+                <div class="card-body">
+                  <p class="explain">Once <code>text</code> is loaded, generating the cloud is a single chained line.</p>
+                  <div class="code-wrap"><pre><code class="language-python">WordCloud().generate_from_text(text).to_image()</code></pre></div>
+                  <ul class="key-list">
+                    <li><strong>.generate_from_text()</strong> — takes a full text string</li>
+                    <li>Method chaining: each <strong>.</strong> calls the next step on the result</li>
+                  </ul>
+                  <div class="dh-tag">Instant visual summary of any document — good for exploring unfamiliar corpora</div>
+                </div>
+              </div>
+              <div class="card" data-exercise="14">
+                <button class="toggle-lock-btn" type="button">🔓 Unlock</button>
+                <div class="card-head"><span class="card-title">Stopwords &amp; background colour</span><span class="ex-badge badge-teal">Ex 14</span></div>
+                <div class="card-body">
+                  <p class="explain"><strong>Stopwords</strong> are common words (and, the, but…) that carry no meaning and dominate word clouds unless removed.</p>
+                  <div class="code-wrap"><pre><code class="language-python">WordCloud(
     stopwords=["and", "then", "but"],
     background_color="white"
 ).generate_from_text(text).to_image()</code></pre></div>
-        <ul class="key-list">
-          <li><strong>stopwords=</strong> — list of words to exclude</li>
-          <li><strong>background_color=</strong> — default is black</li>
-          <li>Use a full NLTK stopword list in Ex 17</li>
-        </ul>
-        <div class="dh-tag">Critical step: removing grammatical noise reveals the content words that carry meaning</div>
-      </div>
-    </div>
-  </div>
+                  <ul class="key-list">
+                    <li><strong>stopwords=</strong> — list of words to exclude</li>
+                    <li><strong>background_color=</strong> — default is black</li>
+                    <li>Use a full NLTK stopword list in Ex 17</li>
+                  </ul>
+                  <div class="dh-tag">Critical step: removing grammatical noise reveals the content words that carry meaning</div>
+                </div>
+              </div>
+            </div>
 
-  <div class="section-label"><h2>Image Masks</h2></div>
-  <div class="cards">
-    <div class="card">
-      <div class="card-head"><span class="card-title">Load an image from Drive</span><span class="ex-badge badge-coral">Ex 15</span></div>
-      <div class="card-body">
-        <p class="explain">Download an image from Google Drive and display it. The File ID comes from the sharing link of your Drive file.</p>
-        <div class="code-wrap"><pre><code class="language-python">from PIL import Image
+            <div class="section-label"><h2>Image Masks</h2></div>
+            <div class="cards">
+              <div class="card" data-exercise="15">
+                <button class="toggle-lock-btn" type="button">🔓 Unlock</button>
+                <div class="card-head"><span class="card-title">Load an image from Drive</span><span class="ex-badge badge-coral">Ex 15</span></div>
+                <div class="card-body">
+                  <p class="explain">Download an image from Google Drive and display it. The File ID comes from the sharing link of your Drive file.</p>
+                  <div class="code-wrap"><pre><code class="language-python">from PIL import Image
 import urllib.request
 
 img = urllib.request.urlretrieve(
@@ -565,19 +1289,20 @@ img = urllib.request.urlretrieve(
 )
 
 Image.open("image1.png")</code></pre></div>
-        <ul class="key-list">
-          <li><strong>PIL / Pillow</strong> — Python image library</li>
-          <li><strong>urlretrieve(url, filename)</strong> — downloads and saves locally</li>
-          <li>Replace <strong>FILE_ID</strong> with your Drive file's ID</li>
-        </ul>
-        <div class="dh-tag">Load historical maps, portraits, or silhouettes to use as word cloud shapes</div>
-      </div>
-    </div>
-    <div class="card">
-      <div class="card-head"><span class="card-title">Word cloud shaped by an image</span><span class="ex-badge badge-coral">Ex 16</span></div>
-      <div class="card-body">
-        <p class="explain">Use any black-and-white image as a <strong>mask</strong> — the word cloud fills the white areas of the shape.</p>
-        <div class="code-wrap"><pre><code class="language-python">import numpy as np
+                  <ul class="key-list">
+                    <li><strong>PIL / Pillow</strong> — Python image library</li>
+                    <li><strong>urlretrieve(url, filename)</strong> — downloads and saves locally</li>
+                    <li>Replace <strong>FILE_ID</strong> with your Drive file's ID</li>
+                  </ul>
+                  <div class="dh-tag">Load historical maps, portraits, or silhouettes to use as word cloud shapes</div>
+                </div>
+              </div>
+              <div class="card" data-exercise="16">
+                <button class="toggle-lock-btn" type="button">🔓 Unlock</button>
+                <div class="card-head"><span class="card-title">Word cloud shaped by an image</span><span class="ex-badge badge-coral">Ex 16</span></div>
+                <div class="card-body">
+                  <p class="explain">Use any black-and-white image as a <strong>mask</strong> — the word cloud fills the white areas of the shape.</p>
+                  <div class="code-wrap"><pre><code class="language-python">import numpy as np
 
 text = urllib.request.urlopen(
     "https://drive.google.com/uc?export=download&id=FILE_ID"
@@ -592,23 +1317,24 @@ WordCloud(
     mask=np.array(Image.open("image1.png")),
     background_color="white"
 ).generate_from_text(text).to_image()</code></pre></div>
-        <ul class="key-list">
-          <li><strong>np.array(Image.open(...))</strong> — converts image to a numeric grid</li>
-          <li><strong>mask=</strong> — the shape the words must stay inside</li>
-          <li>Dark pixels = no words; white = fill with words</li>
-        </ul>
-        <div class="dh-tag">Shape a word cloud like a country outline, a book, or a person's silhouette for visual storytelling</div>
-      </div>
-    </div>
-  </div>
+                  <ul class="key-list">
+                    <li><strong>np.array(Image.open(...))</strong> — converts image to a numeric grid</li>
+                    <li><strong>mask=</strong> — the shape the words must stay inside</li>
+                    <li>Dark pixels = no words; white = fill with words</li>
+                  </ul>
+                  <div class="dh-tag">Shape a word cloud like a country outline, a book, or a person's silhouette for visual storytelling</div>
+                </div>
+              </div>
+            </div>
 
-  <div class="section-label"><h2>Stopwords &amp; Custom Colours</h2></div>
-  <div class="cards">
-    <div class="card">
-      <div class="card-head"><span class="card-title">NLTK stopword list from web</span><span class="ex-badge badge-gold">Ex 17</span></div>
-      <div class="card-body">
-        <p class="explain">Fetch a full professional stopword list directly from GitHub rather than typing individual words manually.</p>
-        <div class="code-wrap"><pre><code class="language-python">stopwords_list = urllib.request.urlopen(
+            <div class="section-label"><h2>Stopwords &amp; Custom Colours</h2></div>
+            <div class="cards">
+              <div class="card" data-exercise="17">
+                <button class="toggle-lock-btn" type="button">🔓 Unlock</button>
+                <div class="card-head"><span class="card-title">NLTK stopword list from web</span><span class="ex-badge badge-gold">Ex 17</span></div>
+                <div class="card-body">
+                  <p class="explain">Fetch a full professional stopword list directly from GitHub rather than typing individual words manually.</p>
+                  <div class="code-wrap"><pre><code class="language-python">stopwords_list = urllib.request.urlopen(
     "https://gist.githubusercontent.com/sebleier/554280/..."
 ).read().decode("utf-8").split("\n")
 
@@ -617,47 +1343,321 @@ WordCloud(
     background_color="white",
     stopwords=stopwords_list
 ).generate_from_text(text).to_image()</code></pre></div>
-        <ul class="key-list">
-          <li><strong>.split("\n")</strong> — splits the file into one word per line</li>
-          <li>NLTK stopword list: ~179 common English words</li>
-          <li>Can load custom stopword lists for any language</li>
-        </ul>
-        <div class="dh-tag">Essential for non-English corpora — load Estonian, French, or domain-specific stopwords the same way</div>
-      </div>
-    </div>
-    <div class="card">
-      <div class="card-head"><span class="card-title">Custom colour function</span><span class="ex-badge badge-gold">Ex 18</span></div>
-      <div class="card-body">
-        <p class="explain">Define your own rule for colouring words. Here: short words are green, longer ones are blue.</p>
-        <div class="code-wrap"><pre><code class="language-python">def color_function(word, font_size, position,
+                  <ul class="key-list">
+                    <li><strong>.split("\n")</strong> — splits the file into one word per line</li>
+                    <li>NLTK stopword list: ~179 common English words</li>
+                    <li>Can load custom stopword lists for any language</li>
+                  </ul>
+                  <div class="dh-tag">Essential for non-English corpora — load Estonian, French, or domain-specific stopwords the same way</div>
+                </div>
+              </div>
+              <div class="card" data-exercise="18">
+                <button class="toggle-lock-btn" type="button">🔓 Unlock</button>
+                <div class="card-head"><span class="card-title">Custom colour function</span><span class="ex-badge badge-gold">Ex 18</span></div>
+                <div class="card-body">
+                  <p class="explain">Define your own rule for colouring words. Here: short words are green, longer ones are blue.</p>
+                  <div class="code-wrap"><pre><code class="language-python">def color_function(word, font_size, position,
                    orientation, random_state=None,
                    **additional_args):
-    if len(word) < 4:   # fewer than 4 letters
+    if len(word) &lt; 4:   # fewer than 4 letters
         return "green"
     return "blue"
 
 WordCloud().generate_from_text(text)\
            .recolor(color_func=color_function)\
            .to_image()</code></pre></div>
-        <ul class="key-list">
-          <li><strong>def</strong> defines a reusable function</li>
-          <li>Colour by word length, frequency, sentiment, part of speech…</li>
-          <li><strong>.recolor(color_func=)</strong> applies your function to the existing cloud</li>
-        </ul>
-        <div class="dh-tag">Highlight sentiment, rare vs. common words, or named entities in different colours</div>
+                  <ul class="key-list">
+                    <li><strong>def</strong> defines a reusable function</li>
+                    <li>Colour by word length, frequency, sentiment, part of speech…</li>
+                    <li><strong>.recolor(color_func=)</strong> applies your function to the existing cloud</li>
+                  </ul>
+                  <div class="dh-tag">Highlight sentiment, rare vs. common words, or named entities in different colours</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <div id="passwordModal" class="modal" role="dialog" aria-modal="true" aria-labelledby="passwordDialogTitle">
+    <div class="modal-card">
+      <h3 id="passwordDialogTitle">Course Access</h3>
+      <p>Enter your password to unlock the course portal.</p>
+      <input id="passwordInput" class="password-input" type="password" placeholder="Password" aria-label="Password" />
+      <div class="password-actions">
+        <button id="cancelPassword" class="secondary-btn" type="button">Cancel</button>
+        <button id="submitPassword" class="primary-btn" type="button">Unlock</button>
       </div>
+      <div id="passwordFeedback" class="password-feedback" aria-live="polite"></div>
     </div>
   </div>
-</div>
 
-<script>
-hljs.highlightAll();
-function show(id, btn) {
-  document.querySelectorAll('.session-block').forEach(el => el.classList.remove('visible'));
-  document.querySelectorAll('.session-tab').forEach(el => el.classList.remove('active'));
-  document.getElementById(id).classList.add('visible');
-  btn.classList.add('active');
-}
-</script>
+  <script>
+    const TEACHER_PASSWORD = "teach2025";
+    const STUDENT_PASSWORD = "python10";
+    const MODE_KEY = "course_mode";
+    const UNLOCK_KEY = "lesson10_unlocked";
+
+    const homePage = document.getElementById("homePage");
+    const lessonPage = document.getElementById("lessonPage");
+    const lockButton = document.getElementById("lockButton");
+    const modeBadge = document.getElementById("modeBadge");
+    const modal = document.getElementById("passwordModal");
+    const passwordInput = document.getElementById("passwordInput");
+    const passwordFeedback = document.getElementById("passwordFeedback");
+    const lessonCard = document.querySelector(".lesson-card.active.clickable");
+    const backButton = document.getElementById("backButton");
+    const teacherActions = document.getElementById("teacherActions");
+
+    function safeParseJSON(value, fallback) {
+      try {
+        return value ? JSON.parse(value) : fallback;
+      } catch (error) {
+        return fallback;
+      }
+    }
+
+    function getUnlockedExercises() {
+      const raw = localStorage.getItem(UNLOCK_KEY);
+      const parsed = safeParseJSON(raw, []);
+      if (!Array.isArray(parsed)) return [];
+      return parsed.map(Number).filter((n) => Number.isInteger(n) && n >= 1 && n <= 18);
+    }
+
+    function saveUnlockedExercises(list) {
+      const uniqueNumbers = [...new Set(list.map(Number).filter((n) => Number.isInteger(n) && n >= 1 && n <= 18))];
+      localStorage.setItem(UNLOCK_KEY, JSON.stringify(uniqueNumbers));
+    }
+
+    function setMode(mode) {
+      sessionStorage.setItem(MODE_KEY, mode);
+      renderModeBadge();
+      renderExerciseState();
+      renderTeacherControls();
+    }
+
+    function clearMode() {
+      sessionStorage.removeItem(MODE_KEY);
+      renderModeBadge();
+      renderExerciseState();
+      renderTeacherControls();
+    }
+
+    function currentMode() {
+      return sessionStorage.getItem(MODE_KEY) || "locked";
+    }
+
+    function renderModeBadge() {
+      const mode = currentMode();
+      modeBadge.className = "mode-badge";
+      if (mode === "student") {
+        modeBadge.classList.add("student");
+        modeBadge.textContent = "🟢 Student";
+      } else if (mode === "teacher") {
+        modeBadge.classList.add("teacher");
+        modeBadge.textContent = "🟡 Teacher";
+      } else {
+        modeBadge.classList.add("locked");
+        modeBadge.textContent = "🔴 Locked";
+      }
+      lockButton.textContent = mode === "teacher" ? "🔓" : mode === "student" ? "🔒" : "🔒";
+    }
+
+    function showHome() {
+      homePage.classList.remove("hidden");
+      lessonPage.classList.add("hidden");
+    }
+
+    function showLesson() {
+      homePage.classList.add("hidden");
+      lessonPage.classList.remove("hidden");
+      renderExerciseState();
+    }
+
+    function toggleTab(tabId) {
+      document.querySelectorAll(".session-tab").forEach((tab) => {
+        tab.classList.toggle("active", tab.dataset.tab === tabId);
+      });
+      document.querySelectorAll(".session-block").forEach((block) => {
+        block.classList.toggle("visible", block.id === tabId);
+      });
+    }
+
+    function applyExerciseState(card, exerciseNumber) {
+      const mode = currentMode();
+      const unlocked = getUnlockedExercises();
+      const isUnlocked = unlocked.includes(exerciseNumber);
+
+      const isTeacher = mode === "teacher";
+      const isStudent = mode === "student";
+
+      const cardLocked = !isTeacher && !isUnlocked;
+      card.classList.toggle("locked", cardLocked);
+      card.classList.toggle("teacher-visible", isTeacher);
+
+      const overlay = card.querySelector(".locked-overlay");
+      if (cardLocked) {
+        if (!overlay) {
+          const overlayEl = document.createElement("div");
+          overlayEl.className = "locked-overlay";
+          overlayEl.innerHTML = '<span class="lock-overlay-icon">🔒</span><span>Locked by instructor</span>';
+          card.appendChild(overlayEl);
+        }
+      } else if (overlay) {
+        overlay.remove();
+      }
+
+      const lockToggle = card.querySelector(".toggle-lock-btn");
+      if (lockToggle) {
+        lockToggle.textContent = isUnlocked ? "🔒 Lock" : "🔓 Unlock";
+      }
+
+      if (mode === "student" && !isUnlocked) {
+        card.style.display = "none";
+      } else {
+        card.style.display = "block";
+      }
+    }
+
+    function renderExerciseState() {
+      const cards = document.querySelectorAll(".card[data-exercise]");
+      cards.forEach((card) => {
+        const exerciseNumber = Number(card.dataset.exercise);
+        applyExerciseState(card, exerciseNumber);
+      });
+    }
+
+    function renderTeacherControls() {
+      const mode = currentMode();
+      const isTeacher = mode === "teacher";
+      teacherActions.classList.toggle("visible", isTeacher);
+      document.querySelectorAll(".toggle-lock-btn").forEach((button) => {
+        button.style.display = isTeacher ? "inline-flex" : "none";
+      });
+    }
+
+    function unlockExercise(number) {
+      const unlocked = getUnlockedExercises();
+      if (!unlocked.includes(number)) {
+        saveUnlockedExercises([...unlocked, number]);
+      }
+      renderExerciseState();
+    }
+
+    function lockExercise(number) {
+      const unlocked = getUnlockedExercises();
+      saveUnlockedExercises(unlocked.filter((n) => n !== number));
+      renderExerciseState();
+    }
+
+    function unlockAllExercises() {
+      saveUnlockedExercises(Array.from({ length: 18 }, (_, i) => i + 1));
+      renderExerciseState();
+    }
+
+    function lockAllExercises() {
+      saveUnlockedExercises([]);
+      renderExerciseState();
+    }
+
+    function openModal() {
+      modal.classList.add("visible");
+      passwordInput.value = "";
+      passwordFeedback.textContent = "";
+      passwordInput.focus();
+    }
+
+    function closeModal() {
+      modal.classList.remove("visible");
+      passwordInput.value = "";
+      passwordFeedback.textContent = "";
+    }
+
+    function handlePasswordSubmit() {
+      const entered = passwordInput.value.trim();
+      if (!entered) {
+        passwordFeedback.textContent = "Please enter a password.";
+        return;
+      }
+
+      if (entered === TEACHER_PASSWORD) {
+        setMode("teacher");
+        closeModal();
+        return;
+      }
+
+      if (entered === STUDENT_PASSWORD) {
+        setMode("student");
+        closeModal();
+        return;
+      }
+
+      passwordFeedback.textContent = "Incorrect password. Try again.";
+    }
+
+    document.querySelector(".lesson-card.active.clickable").addEventListener("click", showLesson);
+    document.querySelector(".lesson-card.active.clickable").addEventListener("keydown", (event) => {
+      if (event.key === "Enter" || event.key === " ") {
+        event.preventDefault();
+        showLesson();
+      }
+    });
+
+    backButton.addEventListener("click", () => {
+      showHome();
+    });
+
+    lockButton.addEventListener("click", openModal);
+    document.getElementById("cancelPassword").addEventListener("click", closeModal);
+    document.getElementById("submitPassword").addEventListener("click", handlePasswordSubmit);
+    passwordInput.addEventListener("keydown", (event) => {
+      if (event.key === "Enter") {
+        handlePasswordSubmit();
+      }
+      if (event.key === "Escape") {
+        closeModal();
+      }
+    });
+
+    modal.addEventListener("click", (event) => {
+      if (event.target === modal) closeModal();
+    });
+
+    document.querySelectorAll(".session-tab").forEach((tab) => {
+      tab.addEventListener("click", () => toggleTab(tab.dataset.tab));
+    });
+
+    document.querySelectorAll(".toggle-lock-btn").forEach((button) => {
+      button.addEventListener("click", (event) => {
+        const card = event.currentTarget.closest(".card");
+        const number = Number(card.dataset.exercise);
+        if (currentMode() !== "teacher") return;
+        const unlocked = getUnlockedExercises();
+        if (unlocked.includes(number)) {
+          lockExercise(number);
+        } else {
+          unlockExercise(number);
+        }
+      });
+    });
+
+    document.getElementById("unlockAllBtn").addEventListener("click", unlockAllExercises);
+    document.getElementById("lockAllBtn").addEventListener("click", lockAllExercises);
+
+    window.addEventListener("load", () => {
+      renderModeBadge();
+      renderExerciseState();
+      renderTeacherControls();
+      if (currentMode() === "teacher") {
+        teacherActions.classList.add("visible");
+      }
+      if (document.querySelector(".lesson-card.active.clickable")) {
+        document.querySelector(".lesson-card.active.clickable").setAttribute("aria-label", "Open Lesson 10");
+      }
+      hljs.highlightAll();
+    });
+  </script>
 </body>
 </html>
