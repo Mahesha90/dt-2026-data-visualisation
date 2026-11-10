@@ -1,1181 +1,492 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>IFI6218.DT — Digital Humanities</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet" />
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Python for Digital Humanities — Lesson 10</title>
   <style>
     :root {
-      --bg: #f7f6f2;
-      --surface: #ffffff;
-      --surface-alt: #f3f1ed;
-      --border: #e2dfd8;
-      --fg: #1a1917;
-      --fg-mid: #5a5651;
-      --fg-dim: #9a948d;
-      --teal: #0d6e6e;
-      --teal-deep: #0a5454;
-      --teal-lt: #d4eeee;
-      --coral: #c0462a;
-      --coral-lt: #fce8e3;
-      --gold: #9b6e00;
-      --gold-lt: #fef3d4;
-      --indigo: #3842a0;
-      --indigo-lt: #e8eaf8;
-      --shadow: rgba(12, 18, 28, 0.08);
-      --code-bg: #1e1e2e;
-      --code-fg: #cdd6f4;
-      --danger: #d63b2f;
-      --success: #1d9b5d;
-      --warning: #c89100;
-      --header-gradient: linear-gradient(135deg, #0d6e6e 0%, #0b4f4f 100%);
-      --radius: 16px;
-      --page-width: 1200px;
       color-scheme: light;
+      --ink: #202522;
+      --muted: #59645f;
+      --paper: #f5f4ef;
+      --surface: #fff;
+      --line: #dedfd8;
+      --green: #176b58;
+      --green-pale: #e2f0e9;
+      --rust: #a64b34;
+      --rust-pale: #f8e9e3;
+      --gold: #87620b;
+      --gold-pale: #f6efd9;
+      --blue: #365a83;
+      --blue-pale: #e9eff6;
+      --code: #202923;
     }
-
-    @media (prefers-color-scheme: dark) {
-      :root {
-        --bg: #13120f;
-        --surface: #1e1d19;
-        --surface-alt: #24221d;
-        --border: #2e2c27;
-        --fg: #f0ece4;
-        --fg-mid: #9a948d;
-        --fg-dim: #5a5651;
-        --teal: #3dbfbf;
-        --teal-deep: #2ca0a0;
-        --teal-lt: #0d2e2e;
-        --coral: #e8795e;
-        --coral-lt: #2e1510;
-        --gold: #e0b040;
-        --gold-lt: #2a200a;
-        --indigo: #818cf8;
-        --indigo-lt: #1a1d3a;
-        --shadow: rgba(0, 0, 0, 0.28);
-        --code-bg: #12111c;
-        color-scheme: dark;
-      }
-    }
-
     * { box-sizing: border-box; }
-    html { scroll-behavior: smooth; }
     body {
       margin: 0;
-      font-family: 'Inter', system-ui, sans-serif;
-      background: var(--bg);
-      color: var(--fg);
-      line-height: 1.6;
+      background: var(--paper);
+      color: var(--ink);
+      font: 16px/1.6 system-ui, -apple-system, "Segoe UI", sans-serif;
     }
-    button, input {
+    header {
+      padding: 2rem max(1rem, calc((100% - 1120px) / 2));
+      background: var(--green);
+      color: white;
+    }
+    header h1 { margin: 0; font-size: clamp(1.7rem, 5vw, 2.5rem); line-height: 1.15; }
+    header p { margin: .6rem 0 0; color: #e3f0e9; }
+    main { max-width: 1120px; margin: auto; padding: 1.25rem 1rem 3rem; }
+    .tabs {
+      display: flex;
+      flex-wrap: wrap;
+      gap: .5rem;
+      border-bottom: 1px solid var(--line);
+      margin-bottom: 1.4rem;
+    }
+    .tab {
+      border: 1px solid var(--line);
+      border-bottom: 0;
+      background: #e9e9e2;
+      color: var(--ink);
+      padding: .7rem 1rem;
       font: inherit;
-    }
-    .hidden {
-      display: none !important;
-    }
-    .app-shell {
-      min-height: 100vh;
-      padding: 0 max(16px, 2vw) 42px;
-    }
-    .home-page, .lesson-page {
-      max-width: var(--page-width);
-      margin: 0 auto;
-    }
-    .top-toolbar {
-      display: flex;
-      justify-content: flex-end;
-      align-items: center;
-      gap: 10px;
-      padding-top: 18px;
-      position: sticky;
-      top: 0;
-      z-index: 40;
-      background: transparent;
-    }
-    .mode-badge {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      padding: 8px 12px;
-      border-radius: 999px;
-      border: 1px solid var(--border);
-      background: rgba(255,255,255,0.72);
-      backdrop-filter: blur(6px);
-      font-size: 0.8rem;
-      font-weight: 700;
-      color: var(--fg);
-      box-shadow: 0 6px 18px rgba(17,17,17,0.06);
-    }
-    .mode-badge.student {
-      color: var(--success);
-      background: rgba(29,155,93,0.12);
-      border-color: rgba(29,155,93,0.35);
-    }
-    .mode-badge.teacher {
-      color: var(--warning);
-      background: rgba(200,145,0,0.12);
-      border-color: rgba(200,145,0,0.38);
-    }
-    .mode-badge.locked {
-      color: var(--danger);
-      background: rgba(214,59,47,0.11);
-      border-color: rgba(214,59,47,0.28);
-    }
-    .login-button,
-    .logout-button,
-    .back-button,
-    .teacher-action,
-    .teacher-action-secondary,
-    .session-tab,
-    .lesson-card,
-    .toggle-lock-btn {
-      transition: transform 0.15s ease, filter 0.15s ease, background 0.15s ease, opacity 0.15s ease;
-    }
-    .login-button,
-    .logout-button,
-    .back-button,
-    .teacher-action,
-    .teacher-action-secondary,
-    .toggle-lock-btn {
-      border: 1px solid rgba(255,255,255,0.24);
-      color: white;
-      background: rgba(255,255,255,0.12);
-      border-radius: 999px;
-      padding: 9px 14px;
       font-weight: 700;
       cursor: pointer;
     }
-    .logout-button {
-      background: rgba(255,255,255,0.14);
-      color: #fff;
-      border-color: rgba(255,255,255,0.25);
+    .tab[aria-selected="true"] { background: var(--surface); color: var(--green); }
+    .panel { display: none; }
+    .panel.active { display: block; }
+    .intro {
+      margin: 0 0 1.5rem;
+      padding: 1rem 1.2rem;
+      border-left: 4px solid var(--green);
+      background: var(--green-pale);
     }
-    .login-button:hover,
-    .logout-button:hover,
-    .back-button:hover,
-    .teacher-action:hover,
-    .teacher-action-secondary:hover,
-    .toggle-lock-btn:hover,
-    .session-tab:hover {
-      transform: translateY(-1px);
+    .intro h2 { margin: 0 0 .4rem; font-size: 1.15rem; }
+    .intro p { margin: 0; }
+    .section-title {
+      display: flex;
+      align-items: center;
+      gap: .75rem;
+      margin: 2rem 0 .9rem;
+      font-size: 1.15rem;
     }
-    .home-header,
-    .lesson-page-header {
-      background: var(--header-gradient);
-      color: white;
-      border-radius: 18px;
-      padding: 36px clamp(18px, 3vw, 36px) 30px;
-      box-shadow: 0 12px 28px rgba(13, 110, 110, 0.18);
-      margin-top: 14px;
-    }
-    .home-header h1,
-    .page-heading h1 {
-      margin: 0;
-      font-size: clamp(2rem, 4vw, 3rem);
-      line-height: 1.15;
-      letter-spacing: -0.04em;
-    }
-    .home-header p {
-      margin: 12px 0 0;
-      opacity: 0.94;
-      font-size: 1.04rem;
-    }
-    .header-row {
+    .section-title::after { content: ""; height: 1px; background: var(--line); flex: 1; }
+    .cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 430px), 1fr)); gap: 1rem; }
+    .card { background: var(--surface); border: 1px solid var(--line); }
+    .card h3 {
       display: flex;
       justify-content: space-between;
-      align-items: flex-start;
-      gap: 18px;
-      flex-wrap: wrap;
-    }
-    .page-heading .subtitle {
-      margin-top: 8px;
-      opacity: 0.9;
-      font-size: 1rem;
-    }
-    .home-grid {
-      margin-top: 26px;
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-      gap: 18px;
-    }
-    .lesson-card {
-      position: relative;
-      border-radius: var(--radius);
-      background: var(--surface);
-      border: 1px solid var(--border);
-      box-shadow: 0 8px 20px var(--shadow);
-      overflow: hidden;
-      min-height: 180px;
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
-      text-align: left;
-      padding: 0;
-    }
-    .lesson-card.clickable {
-      cursor: pointer;
-    }
-    .lesson-card.clickable:hover {
-      transform: translateY(-3px);
-      box-shadow: 0 14px 28px var(--shadow);
-      border-color: rgba(13,110,110,0.38);
-    }
-    .lesson-card.active {
-      background: linear-gradient(180deg, #0d6e6e, #0b5a5a);
-      border-color: transparent;
-      color: white;
-    }
-    .lesson-card.active .lesson-meta,
-    .lesson-card.active .lesson-title,
-    .lesson-card.active .lesson-tag {
-      color: white;
-    }
-    .lesson-card.locked {
-      background: #d8d7d3;
-      color: #605c58;
-      cursor: default;
-      border-color: #c9c7c2;
-    }
-    .lesson-card.locked .lesson-title,
-    .lesson-card.locked .lesson-tag {
-      color: #605c58;
-    }
-    .lesson-card.locked .lesson-tag {
-      background: rgba(96,92,88,0.08);
-    }
-    .lesson-card .card-content {
-      padding: 18px 18px 16px;
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-      height: 100%;
-    }
-    .lesson-meta {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 8px;
-      color: var(--fg-mid);
-      font-size: 0.8rem;
-      font-weight: 700;
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
-    }
-    .lesson-title {
-      font-size: clamp(1.06rem, 2vw, 1.42rem);
-      line-height: 1.3;
-      font-weight: 700;
-      letter-spacing: -0.02em;
+      gap: .75rem;
       margin: 0;
-      color: var(--fg);
-    }
-    .lesson-tag {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      font-size: 0.78rem;
-      font-weight: 700;
-      color: var(--teal);
-      background: rgba(13,110,110,0.08);
-      border-radius: 999px;
-      padding: 7px 10px;
-      width: fit-content;
-    }
-    .lesson-card.active .lesson-tag {
-      background: rgba(255,255,255,0.14);
-      color: white;
-    }
-    .lesson-lock-icon {
-      font-size: 1rem;
-      opacity: 0.9;
-    }
-    .teacher-actions-row {
-      margin-top: 18px;
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      flex-wrap: wrap;
-      opacity: 0;
-      pointer-events: none;
-      max-height: 0;
-      overflow: hidden;
-      transition: opacity 0.2s ease, max-height 0.2s ease;
-    }
-    .teacher-actions-row.visible {
-      opacity: 1;
-      pointer-events: auto;
-      max-height: 200px;
-    }
-    .teacher-action-secondary {
-      background: rgba(255,255,255,0.12);
-      border: 1px solid rgba(255,255,255,0.24);
-      color: white;
-      border-radius: 10px;
-      padding: 9px 12px;
-      font-weight: 700;
-      cursor: pointer;
-    }
-    .session-tabs {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      flex-wrap: wrap;
-      margin: 12px 0 0;
-    }
-    .session-tab {
-      background: rgba(255,255,255,0.12);
-      color: white;
-      border: 1px solid rgba(255,255,255,0.24);
-      border-radius: 999px;
-      padding: 9px 14px;
-      font-weight: 700;
-      letter-spacing: 0.04em;
-      font-size: 0.75rem;
-      text-transform: uppercase;
-      cursor: pointer;
-    }
-    .session-tab.active {
-      background: rgba(255,255,255,0.28);
-    }
-    .content-shell {
-      position: relative;
-      padding-top: 18px;
-    }
-    .session-block { display: none; }
-    .session-block.visible { display: block; }
-    .dh-banner {
-      background: var(--gold-lt);
-      border: 1px solid var(--gold);
-      border-radius: 10px;
-      padding: 1.1rem 1.25rem;
-      margin: 1.4rem 0 1.8rem;
-      display: flex;
-      gap: 0.75rem;
-      align-items: flex-start;
-    }
-    .dh-banner-icon { font-size: 1.5rem; line-height: 1; flex-shrink: 0; }
-    .dh-banner-text strong {
-      display: block;
-      color: var(--gold);
-      font-size: 0.75rem;
-      font-weight: 700;
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
-      margin-bottom: 0.2rem;
-    }
-    .dh-banner-text p {
-      font-size: 0.9rem;
-      color: var(--fg);
-      line-height: 1.5;
-      margin: 0;
-    }
-    .section-label {
-      display: flex;
-      align-items: center;
-      gap: 0.6rem;
-      margin: 2rem 0 1rem;
-    }
-    .section-label h2 {
-      font-size: 1rem;
-      font-weight: 700;
-      letter-spacing: 0.06em;
-      text-transform: uppercase;
-      color: var(--fg-mid);
-      white-space: nowrap;
-      margin: 0;
-    }
-    .section-label::after {
-      content: "";
-      flex: 1;
-      height: 1px;
-      background: var(--border);
-    }
-    .cards {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(min(100%, 420px), 1fr));
-      gap: 1rem;
-      margin-bottom: 0.5rem;
-    }
-    .exercise-card {
-      position: relative;
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: 10px;
-      overflow: hidden;
-      transition: filter 0.18s ease, transform 0.15s ease, border-color 0.15s ease;
-    }
-    .exercise-card:hover {
-      border-color: rgba(13,110,110,0.38);
-    }
-    .exercise-card.locked {
-      filter: blur(0.55px);
-      opacity: 0.95;
-    }
-    .exercise-card.locked .card-body {
-      pointer-events: none;
-    }
-    .exercise-card .card-body {
-      padding: 0.9rem 1rem;
-      display: flex;
-      flex-direction: column;
-      gap: 0.75rem;
-    }
-    .exercise-card .card-head {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 0.65rem 1rem;
-      border-bottom: 1px solid var(--border);
-      gap: 0.5rem;
-    }
-    .card-title {
-      font-size: 0.82rem;
-      font-weight: 700;
-      color: var(--fg);
-    }
-    .ex-badge {
-      font-size: 0.7rem;
-      font-weight: 600;
-      letter-spacing: 0.05em;
-      border-radius: 999px;
-      padding: 0.15rem 0.55rem;
-      white-space: nowrap;
-      flex-shrink: 0;
-    }
-    .badge-teal { background: var(--teal-lt); color: var(--teal); }
-    .badge-coral { background: var(--coral-lt); color: var(--coral); }
-    .badge-gold { background: var(--gold-lt); color: var(--gold); }
-    .badge-indigo { background: var(--indigo-lt); color: var(--indigo); }
-    .explain { font-size: 0.84rem; color: var(--fg-mid); line-height: 1.55; }
-    .explain strong { color: var(--fg); }
-    .code-wrap { overflow-x: auto; border-radius: 7px; background: var(--code-bg); }
-    .code-wrap pre { margin: 0; padding: 0.75rem 1rem; }
-    .code-wrap code {
-      font-family: 'JetBrains Mono', 'Fira Code', monospace;
-      font-size: 0.78rem;
-      line-height: 1.6;
-      color: var(--code-fg);
-      background: transparent !important;
-    }
-    .key-list { list-style: none; display: flex; flex-direction: column; gap: 0.3rem; }
-    .key-list li { font-size: 0.8rem; color: var(--fg-mid); display: flex; gap: 0.4rem; }
-    .key-list li::before { content: "→"; color: var(--teal); font-weight: 700; flex-shrink: 0; }
-    .key-list li strong { color: var(--fg); }
-    .dh-tag {
-      font-size: 0.75rem;
-      color: var(--gold);
-      background: var(--gold-lt);
-      border-radius: 6px;
-      padding: 0.4rem 0.65rem;
-      line-height: 1.4;
-    }
-    .dh-tag::before { content: "📚 DH use: "; font-weight: 700; }
-    .why-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(min(100%, 260px), 1fr));
-      gap: 0.75rem;
-      margin-bottom: 2rem;
-    }
-    .why-card {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: 10px;
-      padding: 1rem;
-    }
-    .why-card h3 { font-size: 0.85rem; font-weight: 700; margin-bottom: 0.4rem; color: var(--fg); }
-    .why-card p { font-size: 0.8rem; color: var(--fg-mid); line-height: 1.5; }
-    .why-icon { font-size: 1.3rem; margin-bottom: 0.4rem; }
-    .exercise-card.locked .locked-overlay {
-      position: absolute;
-      inset: 0;
-      background: rgba(18, 18, 18, 0.18);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      z-index: 3;
-      backdrop-filter: blur(1.2px);
-    }
-    .exercise-card.locked .locked-message {
-      background: rgba(255,255,255,0.8);
-      color: var(--fg);
-      border: 1px solid rgba(0,0,0,0.08);
-      border-radius: 999px;
-      padding: 8px 12px;
-      font-size: 0.72rem;
-      font-weight: 700;
-      letter-spacing: 0.04em;
-      text-transform: uppercase;
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-    }
-    .exercise-card.locked .toggle-lock-btn {
-      position: absolute;
-      right: 12px;
-      top: 12px;
-      z-index: 4;
-      border-radius: 999px;
-      padding: 6px 10px;
-      font-size: 0.7rem;
-      background: rgba(13,110,110,0.92);
-      border-color: rgba(13,110,110,0.92);
-    }
-    .exercise-card .toggle-lock-btn {
-      display: none;
-    }
-    .exercise-card.teacher-visible .toggle-lock-btn {
-      display: inline-flex;
-      position: absolute;
-      right: 12px;
-      top: 12px;
-      z-index: 4;
-      border-radius: 999px;
-      padding: 6px 10px;
-      font-size: 0.7rem;
-      background: rgba(13,110,110,0.92);
-      border-color: rgba(13,110,110,0.92);
-    }
-    .exercise-card.locked .locked-message::before { content: "🔒"; }
-    .hljs-keyword { color: #cba6f7; }
-    .hljs-string { color: #a6e3a1; }
-    .hljs-number { color: #fab387; }
-    .hljs-comment { color: #6c7086; font-style: italic; }
-    .hljs-built_in { color: #89dceb; }
-    .hljs-title.function_ { color: #89b4fa; }
-    .hljs-params { color: #cdd6f4; }
-    .hljs-variable { color: #cdd6f4; }
-    .hljs-operator { color: #89dceb; }
-    .password-modal {
-      position: fixed;
-      inset: 0;
-      background: rgba(16, 14, 13, 0.55);
-      display: none;
-      align-items: center;
-      justify-content: center;
-      z-index: 80;
-      padding: 20px;
-    }
-    .password-modal.visible { display: flex; }
-    .password-panel {
-      width: min(100%, 420px);
-      background: var(--surface);
-      border: 1px solid var(--border);
-      box-shadow: 0 18px 50px rgba(0,0,0,0.22);
-      border-radius: 18px;
-      padding: 22px 20px 18px;
-    }
-    .password-panel h3 {
-      margin: 0 0 8px;
-      font-size: 1.25rem;
-    }
-    .password-panel p {
-      margin: 0 0 14px;
-      color: var(--fg-mid);
-      font-size: 0.92rem;
-    }
-    .password-panel input {
-      width: 100%;
-      border: 1px solid var(--border);
-      background: var(--surface-alt);
-      color: var(--fg);
-      border-radius: 10px;
-      padding: 12px 14px;
-      margin-bottom: 12px;
+      padding: .7rem 1rem;
+      border-bottom: 1px solid var(--line);
       font-size: 1rem;
     }
-    .password-actions {
-      display: flex;
-      justify-content: flex-end;
-      gap: 10px;
-      margin-top: 8px;
+    .badge { color: var(--green); font-size: .75rem; white-space: nowrap; }
+    .body { padding: .85rem 1rem 1rem; }
+    .body > :first-child { margin-top: 0; }
+    .explain { color: var(--muted); }
+    .scenario {
+      margin: .8rem 0;
+      padding: .7rem .8rem;
+      border-left: 3px solid var(--blue);
+      background: var(--blue-pale);
+      color: var(--muted);
+      font-size: .92rem;
     }
-    .secondary-btn {
-      border: 1px solid var(--border);
-      background: transparent;
-      color: var(--fg);
-      border-radius: 999px;
-      padding: 9px 14px;
-      font-weight: 700;
-      cursor: pointer;
+    .scenario p { margin: .25rem 0; }
+    .scenario strong { color: var(--ink); }
+    .think { color: var(--blue); }
+    pre {
+      overflow-x: auto;
+      margin: .8rem 0;
+      padding: .85rem 1rem;
+      background: var(--code);
+      color: #edf2eb;
+      font: .86rem/1.55 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
     }
-    .primary-btn {
-      border: 1px solid var(--teal);
-      background: var(--teal);
-      color: white;
-      border-radius: 999px;
-      padding: 9px 14px;
-      font-weight: 700;
-      cursor: pointer;
+    code { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
+    .keys { padding-left: 1.2rem; color: var(--muted); font-size: .9rem; }
+    .keys li { margin: .2rem 0; }
+    .dh-use {
+      margin: .75rem 0 0;
+      padding: .5rem .65rem;
+      background: var(--gold-pale);
+      color: #66500f;
+      font-size: .88rem;
     }
-    @media (max-width: 500px) {
-      .cards, .why-grid { grid-template-columns: 1fr; }
-      .header-row { align-items: stretch; }
-      .session-tab { font-size: 0.68rem; }
+    .why-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 280px), 1fr)); gap: .8rem; }
+    .why-item { background: var(--surface); border: 1px solid var(--line); padding: 1rem; }
+    .why-item h3 { margin: 0 0 .35rem; font-size: 1rem; }
+    .why-item p { margin: 0; color: var(--muted); font-size: .93rem; }
+    @media (max-width: 600px) {
+      header { padding-top: 1.5rem; padding-bottom: 1.5rem; }
+      .tab { flex: 1 1 100%; text-align: left; border: 1px solid var(--line); }
+      .tabs { border: 0; }
     }
   </style>
 </head>
 <body>
-  <div class="app-shell">
-    <div class="home-page" id="homePage">
-      <div class="top-toolbar">
-        <span id="modeBadge" class="mode-badge locked">🔴 Locked</span>
-        <button id="lockButton" class="login-button" type="button" aria-label="Open login">🔒</button>
-        <button id="logoutButton" class="logout-button hidden" type="button">Logout</button>
+  <header>
+    <h1>IFI6218.DT — Python for Digital Humanities</h1>
+    <p>Lesson 10 · Cheat Sheet · Google Colab / GitHub Codespaces</p>
+  </header>
+
+  <main>
+    <nav class="tabs" role="tablist" aria-label="Lesson sections">
+      <button class="tab" id="tab-why" role="tab" aria-controls="why" aria-selected="true">Why This Matters</button>
+      <button class="tab" id="tab-s1" role="tab" aria-controls="s1" aria-selected="false" tabindex="-1">Session 01 — Python Basics</button>
+      <button class="tab" id="tab-s2" role="tab" aria-controls="s2" aria-selected="false" tabindex="-1">Session 02 — Word Clouds</button>
+    </nav>
+
+    <section class="panel active" id="why" role="tabpanel" aria-labelledby="tab-why">
+      <div class="intro">
+        <h2>Why Python in Digital Humanities?</h2>
+        <p>Humanities research has always been about texts, archives, images, and patterns in human culture. Python lets you work with these at scale — reading thousands of documents, finding patterns across corpora, and visualising language — things impossible by hand alone.</p>
+      </div>
+      <div class="why-grid">
+        <article class="why-item"><h3>Text Analysis at Scale</h3><p>Literature, history, journalism — Python can read entire archives in seconds, counting words, tracking themes, and finding patterns that would take human readers years.</p></article>
+        <article class="why-item"><h3>Corpus Linguistics</h3><p>Linguists use loops and string operations to study how language changes over time — which words appear together, how sentences are structured across dialects and eras.</p></article>
+        <article class="why-item"><h3>Archive Processing</h3><p>Historians process digitised newspapers, letters, and records. Variables store data; loops process thousands of documents; conditions filter relevant entries.</p></article>
+        <article class="why-item"><h3>Visual Storytelling</h3><p>Word clouds turn raw text into visual arguments — a tool for communicating findings to non-technical audiences, used in journalism, public history, and education.</p></article>
+        <article class="why-item"><h3>Critical Search</h3><p>Filtering with conditions (if/else) mirrors archival source criticism: not all data is relevant. Code makes selection criteria explicit and reproducible.</p></article>
+        <article class="why-item"><h3>Open &amp; Reproducible</h3><p>Python is free, widely taught, and runs in a browser via Colab. Sharing a notebook means sharing the method — making humanities research as transparent as a footnote.</p></article>
+      </div>
+    </section>
+
+    <section class="panel" id="s1" role="tabpanel" aria-labelledby="tab-s1" hidden>
+      <div class="intro">
+        <h2>Session 01 — The building blocks</h2>
+        <p>These exercises cover the core ideas all programming is built on: arithmetic, variables, loops, conditions, and string operations. In Digital Humanities, these become tools for working with words, sentences, and collections of texts.</p>
       </div>
 
-      <header class="home-header">
-        <h1>Python for Digital Humanities</h1>
-        <p>12-lesson course portal</p>
-      </header>
-
-      <div class="home-grid" id="lessonGrid">
-        <button class="lesson-card locked" type="button" data-lesson="1" aria-disabled="true">
-          <div class="card-content">
-            <div class="lesson-meta"><span>Lesson</span><span>01</span></div>
-            <h3 class="lesson-title">Lesson 01</h3>
-            <span class="lesson-tag"><span class="lesson-lock-icon">🔒</span> Coming Soon</span>
+      <h2 class="section-title">Arithmetic &amp; Variables</h2>
+      <div class="cards">
+        <article class="card">
+          <h3>Arithmetic <span class="badge">Ex 01</span></h3>
+          <div class="body">
+            <p class="explain">Python as a calculator. The result appears immediately — good for testing ideas quickly.</p>
+            <div class="scenario">
+              <p><strong>Humanities scenario:</strong> A researcher counts references to a person across digitised newspaper issues. Comparing totals can help describe how attention changes over time.</p>
+              <p><strong>Link to the code:</strong> The simple values in the example below show arithmetic that can also be used with archive counts.</p>
+              <p class="think"><strong>Think:</strong> Which newspapers were digitised, and whose stories may be missing from the count?</p>
+            </div>
+            <pre><code>3 + 2</code></pre>
+            <ul class="keys"><li><strong>+  -  *  /  //  %  **</strong> — basic operators</li><li><strong>//</strong> integer division · <strong>%</strong> remainder · <strong>**</strong> power</li></ul>
+            <p class="dh-use">Digital Humanities use: Counting word frequencies, page numbers, years between dates</p>
           </div>
-        </button>
-        <button class="lesson-card locked" type="button" data-lesson="2" aria-disabled="true">
-          <div class="card-content">
-            <div class="lesson-meta"><span>Lesson</span><span>02</span></div>
-            <h3 class="lesson-title">Lesson 02</h3>
-            <span class="lesson-tag"><span class="lesson-lock-icon">🔒</span> Coming Soon</span>
+        </article>
+        <article class="card">
+          <h3>Variables &amp; Strings <span class="badge">Ex 02</span></h3>
+          <div class="body">
+            <p class="explain">A <strong>variable</strong> stores a value and gives it a name. <strong>Strings</strong> are text wrapped in quotes. <code>+</code> joins strings together.</p>
+            <div class="scenario">
+              <p><strong>Humanities scenario:</strong> A digital archive stores a letter’s author and title alongside its text. Keeping these details under clear names helps researchers identify and describe each source.</p>
+              <p><strong>Link to the code:</strong> The example below uses a simple name to demonstrate storing text and joining it into a message.</p>
+              <p class="think"><strong>Think:</strong> Who assigned the author’s name, and could that catalogue record reflect an uncertain attribution?</p>
+            </div>
+            <pre><code>first_name = "Juku"
+print("Hello, " + first_name)</code></pre>
+            <ul class="keys"><li><strong>=</strong> assigns a value to a name</li><li><strong>print()</strong> displays the result</li><li>Strings use <strong>" "</strong> or <strong>' '</strong> quotes</li></ul>
+            <p class="dh-use">Digital Humanities use: Storing an author's name, a book title, a date, a source URL</p>
           </div>
-        </button>
-        <button class="lesson-card locked" type="button" data-lesson="3" aria-disabled="true">
-          <div class="card-content">
-            <div class="lesson-meta"><span>Lesson</span><span>03</span></div>
-            <h3 class="lesson-title">Lesson 03</h3>
-            <span class="lesson-tag"><span class="lesson-lock-icon">🔒</span> Coming Soon</span>
-          </div>
-        </button>
-        <button class="lesson-card locked" type="button" data-lesson="4" aria-disabled="true">
-          <div class="card-content">
-            <div class="lesson-meta"><span>Lesson</span><span>04</span></div>
-            <h3 class="lesson-title">Lesson 04</h3>
-            <span class="lesson-tag"><span class="lesson-lock-icon">🔒</span> Coming Soon</span>
-          </div>
-        </button>
-        <button class="lesson-card locked" type="button" data-lesson="5" aria-disabled="true">
-          <div class="card-content">
-            <div class="lesson-meta"><span>Lesson</span><span>05</span></div>
-            <h3 class="lesson-title">Lesson 05</h3>
-            <span class="lesson-tag"><span class="lesson-lock-icon">🔒</span> Coming Soon</span>
-          </div>
-        </button>
-        <button class="lesson-card locked" type="button" data-lesson="6" aria-disabled="true">
-          <div class="card-content">
-            <div class="lesson-meta"><span>Lesson</span><span>06</span></div>
-            <h3 class="lesson-title">Lesson 06</h3>
-            <span class="lesson-tag"><span class="lesson-lock-icon">🔒</span> Coming Soon</span>
-          </div>
-        </button>
-        <button class="lesson-card locked" type="button" data-lesson="7" aria-disabled="true">
-          <div class="card-content">
-            <div class="lesson-meta"><span>Lesson</span><span>07</span></div>
-            <h3 class="lesson-title">Lesson 07</h3>
-            <span class="lesson-tag"><span class="lesson-lock-icon">🔒</span> Coming Soon</span>
-          </div>
-        </button>
-        <button class="lesson-card locked" type="button" data-lesson="8" aria-disabled="true">
-          <div class="card-content">
-            <div class="lesson-meta"><span>Lesson</span><span>08</span></div>
-            <h3 class="lesson-title">Lesson 08</h3>
-            <span class="lesson-tag"><span class="lesson-lock-icon">🔒</span> Coming Soon</span>
-          </div>
-        </button>
-        <button class="lesson-card locked" type="button" data-lesson="9" aria-disabled="true">
-          <div class="card-content">
-            <div class="lesson-meta"><span>Lesson</span><span>09</span></div>
-            <h3 class="lesson-title">Lesson 09</h3>
-            <span class="lesson-tag"><span class="lesson-lock-icon">🔒</span> Coming Soon</span>
-          </div>
-        </button>
-        <button class="lesson-card active clickable" type="button" data-lesson="10">
-          <div class="card-content">
-            <div class="lesson-meta"><span>Lesson</span><span>10</span></div>
-            <h3 class="lesson-title">Python Basics &amp; Word Clouds</h3>
-            <span class="lesson-tag">Active</span>
-          </div>
-        </button>
-        <button class="lesson-card locked" type="button" data-lesson="11" aria-disabled="true">
-          <div class="card-content">
-            <div class="lesson-meta"><span>Lesson</span><span>11</span></div>
-            <h3 class="lesson-title">Lesson 11</h3>
-            <span class="lesson-tag"><span class="lesson-lock-icon">🔒</span> Coming Soon</span>
-          </div>
-        </button>
-        <button class="lesson-card locked" type="button" data-lesson="12" aria-disabled="true">
-          <div class="card-content">
-            <div class="lesson-meta"><span>Lesson</span><span>12</span></div>
-            <h3 class="lesson-title">Lesson 12</h3>
-            <span class="lesson-tag"><span class="lesson-lock-icon">🔒</span> Coming Soon</span>
-          </div>
-        </button>
-      </div>
-    </div>
-
-    <div class="lesson-page hidden" id="lessonPage">
-      <div class="lesson-page-header">
-        <div class="header-row">
-          <div class="page-heading">
-            <h1>Python for Digital Humanities</h1>
-            <div class="subtitle">Cheat Sheet · Sessions 01 &amp; 02 · Google Colab / GitHub Codespaces</div>
-          </div>
-          <div class="header-actions">
-            <button class="back-button" id="backButton" type="button">← Back</button>
-          </div>
-        </div>
-        <div class="session-tabs">
-          <button class="session-tab active" data-target="why" type="button">Why This Matters</button>
-          <button class="session-tab" data-target="s1" type="button">Session 01 — Python Basics</button>
-          <button class="session-tab" data-target="s2" type="button">Session 02 — Word Clouds</button>
-        </div>
-        <div class="teacher-actions-row" id="teacherControls">
-          <button class="teacher-action-secondary" id="unlockAllBtn" type="button">Unlock All</button>
-          <button class="teacher-action-secondary" id="lockAllBtn" type="button">Lock All</button>
-        </div>
+        </article>
       </div>
 
-      <div class="content-shell">
-        <div id="why" class="session-block visible">
-          <div class="dh-banner">
-            <div class="dh-banner-icon">🎓</div>
-            <div class="dh-banner-text">
-              <strong>Why Python in Digital Humanities?</strong>
-              <p>Humanities research has always been about texts, archives, images, and patterns in human culture. Python lets you work with these at scale — reading thousands of documents, finding patterns across corpora, and visualising language — things impossible by hand alone.</p>
+      <h2 class="section-title">Loops</h2>
+      <div class="cards">
+        <article class="card">
+          <h3>Loop over numbers <span class="badge">Ex 03</span></h3>
+          <div class="body">
+            <p class="explain"><code>range(5)</code> produces 0, 1, 2, 3, 4. The loop runs the indented block once per value.</p>
+            <div class="scenario">
+              <p><strong>Humanities scenario:</strong> A historian reviews a catalogue of digitised letters and needs to label each record in a small batch. Numbering items makes the set easier to track.</p>
+              <p><strong>Link to the code:</strong> The example below loops through five simple numbers to show the repeated step used for a batch of records.</p>
+              <p class="think"><strong>Think:</strong> Who decided which letters entered the catalogue, and what was left out?</p>
             </div>
+            <pre><code>for number in range(5):
+    print(number)</code></pre>
+            <ul class="keys"><li><strong>for ... in ...:</strong> — the loop structure</li><li><strong>range(n)</strong> — integers from 0 to n-1</li><li>Indentation (4 spaces) marks the loop body</li></ul>
+            <p class="dh-use">Digital Humanities use: Numbering pages, iterating over years, processing rows in a dataset</p>
           </div>
-          <div class="why-grid">
-            <div class="why-card"><div class="why-icon">📖</div><h3>Text Analysis at Scale</h3><p>Literature, history, journalism — Python can read entire archives in seconds, counting words, tracking themes, and finding patterns that would take human readers years.</p></div>
-            <div class="why-card"><div class="why-icon">🗺️</div><h3>Corpus Linguistics</h3><p>Linguists use loops and string operations to study how language changes over time — which words appear together, how sentences are structured across dialects and eras.</p></div>
-            <div class="why-card"><div class="why-icon">🏛️</div><h3>Archive Processing</h3><p>Historians process digitised newspapers, letters, and records. Variables store data; loops process thousands of documents; conditions filter relevant entries.</p></div>
-            <div class="why-card"><div class="why-icon">🎨</div><h3>Visual Storytelling</h3><p>Word clouds turn raw text into visual arguments — a tool for communicating findings to non-technical audiences, used in journalism, public history, and education.</p></div>
-            <div class="why-card"><div class="why-icon">🔍</div><h3>Critical Search</h3><p>Filtering with conditions (if/else) mirrors archival source criticism: not all data is relevant. Code makes selection criteria explicit and reproducible.</p></div>
-            <div class="why-card"><div class="why-icon">🤝</div><h3>Open &amp; Reproducible</h3><p>Python is free, widely taught, and runs in a browser via Colab. Sharing a notebook means sharing the method — making humanities research as transparent as a footnote.</p></div>
+        </article>
+        <article class="card">
+          <h3>Loop over characters <span class="badge">Ex 04</span></h3>
+          <div class="body">
+            <p class="explain">You can loop over any sequence — including the letters in a string, one at a time.</p>
+            <div class="scenario">
+              <p><strong>Humanities scenario:</strong> A researcher examines how a person’s name is written in a historical letter, character by character, to compare spelling across documents.</p>
+              <p><strong>Link to the code:</strong> The example below uses a simple name to show the same character-by-character process.</p>
+              <p class="think"><strong>Think:</strong> Could damaged pages, handwriting, or transcription choices change which letters appear?</p>
+            </div>
+            <pre><code>for letter in first_name:
+    print(letter)</code></pre>
+            <ul class="keys"><li>A string is a sequence of characters</li><li>Same <code>for ... in ...</code> pattern as Ex 03</li></ul>
+            <p class="dh-use">Digital Humanities use: Reading a text character by character — useful for encoding detection, transliteration</p>
           </div>
-        </div>
+        </article>
+      </div>
 
-        <div id="s1" class="session-block">
-          <div class="dh-banner">
-            <div class="dh-banner-icon">🧱</div>
-            <div class="dh-banner-text">
-              <strong>Session 01 — The building blocks</strong>
-              <p>These exercises cover the core ideas all programming is built on: arithmetic, variables, loops, conditions, and string operations. In Digital Humanities, these become tools for working with words, sentences, and collections of texts.</p>
+      <h2 class="section-title">Conditions</h2>
+      <div class="cards">
+        <article class="card">
+          <h3>if / else <span class="badge">Ex 05</span></h3>
+          <div class="body">
+            <p class="explain">Make a decision based on a condition. If the condition is true, run the first block; otherwise, run the else block.</p>
+            <div class="scenario">
+              <p><strong>Humanities scenario:</strong> A researcher selects newspaper articles published before a chosen date for a study of public debate. A clear rule makes the selection easier to explain.</p>
+              <p><strong>Link to the code:</strong> The example below compares a simple value with a rule to demonstrate how a selection decision is made.</p>
+              <p class="think"><strong>Think:</strong> What perspectives might be excluded by choosing only articles from that period?</p>
             </div>
-          </div>
-
-          <div class="section-label"><h2>Arithmetic &amp; Variables</h2></div>
-          <div class="cards">
-            <div class="exercise-card" data-exercise="1">
-              <button class="toggle-lock-btn" type="button">🔓 Unlock</button>
-              <div class="card-head"><span class="card-title">Arithmetic</span><span class="ex-badge badge-teal">Ex 01</span></div>
-              <div class="card-body">
-                <p class="explain">Python as a calculator. The result appears immediately — good for testing ideas quickly.</p>
-                <div class="code-wrap"><pre><code class="language-python">3 + 2</code></pre></div>
-                <ul class="key-list">
-                  <li><strong>+  –  *  /  //  %  **</strong> — basic operators</li>
-                  <li><strong>//</strong> integer division &nbsp;·&nbsp; <strong>%</strong> remainder &nbsp;·&nbsp; <strong>**</strong> power</li>
-                </ul>
-                <div class="dh-tag">Counting word frequencies, page numbers, years between dates</div>
-              </div>
-              <div class="locked-overlay"><div class="locked-message">Locked by instructor</div></div>
-            </div>
-
-            <div class="exercise-card" data-exercise="2">
-              <button class="toggle-lock-btn" type="button">🔓 Unlock</button>
-              <div class="card-head"><span class="card-title">Variables &amp; Strings</span><span class="ex-badge badge-teal">Ex 02</span></div>
-              <div class="card-body">
-                <p class="explain">A <strong>variable</strong> stores a value and gives it a name. <strong>Strings</strong> are text wrapped in quotes. <code>+</code> joins strings together.</p>
-                <div class="code-wrap"><pre><code class="language-python">first_name = "Juku"
-print("Hello, " + first_name)</code></pre></div>
-                <ul class="key-list">
-                  <li><strong>=</strong> assigns a value to a name</li>
-                  <li><strong>print()</strong> displays the result</li>
-                  <li>Strings use <strong>" "</strong> or <strong>' '</strong> quotes</li>
-                </ul>
-                <div class="dh-tag">Storing an author's name, a book title, a date, a source URL</div>
-              </div>
-              <div class="locked-overlay"><div class="locked-message">Locked by instructor</div></div>
-            </div>
-          </div>
-
-          <div class="section-label"><h2>Loops</h2></div>
-          <div class="cards">
-            <div class="exercise-card" data-exercise="3">
-              <button class="toggle-lock-btn" type="button">🔓 Unlock</button>
-              <div class="card-head"><span class="card-title">Loop over numbers</span><span class="ex-badge badge-coral">Ex 03</span></div>
-              <div class="card-body">
-                <p class="explain"><code>range(5)</code> produces 0, 1, 2, 3, 4. The loop runs the indented block once per value.</p>
-                <div class="code-wrap"><pre><code class="language-python">for number in range(5):
-    print(number)</code></pre></div>
-                <ul class="key-list">
-                  <li><strong>for … in …:</strong> — the loop structure</li>
-                  <li><strong>range(n)</strong> — integers from 0 to n–1</li>
-                  <li>Indentation (4 spaces) marks the loop body</li>
-                </ul>
-                <div class="dh-tag">Numbering pages, iterating over years, processing rows in a dataset</div>
-              </div>
-              <div class="locked-overlay"><div class="locked-message">Locked by instructor</div></div>
-            </div>
-
-            <div class="exercise-card" data-exercise="4">
-              <button class="toggle-lock-btn" type="button">🔓 Unlock</button>
-              <div class="card-head"><span class="card-title">Loop over characters</span><span class="ex-badge badge-coral">Ex 04</span></div>
-              <div class="card-body">
-                <p class="explain">You can loop over any sequence — including the letters in a string, one at a time.</p>
-                <div class="code-wrap"><pre><code class="language-python">for letter in first_name:
-    print(letter)</code></pre></div>
-                <ul class="key-list">
-                  <li>A string is a sequence of characters</li>
-                  <li>Same <code>for … in …</code> pattern as Ex 03</li>
-                </ul>
-                <div class="dh-tag">Reading a text character by character — useful for encoding detection, transliteration</div>
-              </div>
-              <div class="locked-overlay"><div class="locked-message">Locked by instructor</div></div>
-            </div>
-          </div>
-
-          <div class="section-label"><h2>Conditions</h2></div>
-          <div class="cards">
-            <div class="exercise-card" data-exercise="5">
-              <button class="toggle-lock-btn" type="button">🔓 Unlock</button>
-              <div class="card-head"><span class="card-title">if / else</span><span class="ex-badge badge-gold">Ex 05</span></div>
-              <div class="card-body">
-                <p class="explain">Make a decision based on a condition. If the condition is true, run the first block; otherwise, run the else block.</p>
-                <div class="code-wrap"><pre><code class="language-python">age = 8
-if age <= 7:
+            <pre><code>age = 8
+if age &lt;= 7:
     print("Free")
 else:
-    print("Buy a ticket")</code></pre></div>
-                <ul class="key-list">
-                  <li><strong>&lt;=  &gt;=  ==  !=  &lt;  &gt;</strong> — comparison operators</li>
-                  <li>== checks equality (not = which assigns)</li>
-                </ul>
-                <div class="dh-tag">Filtering sources by date, selecting texts from a certain period</div>
-              </div>
-              <div class="locked-overlay"><div class="locked-message">Locked by instructor</div></div>
+    print("Buy a ticket")</code></pre>
+            <ul class="keys"><li><strong>&lt;=  &gt;=  ==  !=  &lt;  &gt;</strong> — comparison operators</li><li><code>==</code> checks equality (not <code>=</code>, which assigns)</li></ul>
+            <p class="dh-use">Digital Humanities use: Filtering sources by date, selecting texts from a certain period</p>
+          </div>
+        </article>
+        <article class="card">
+          <h3>Nested if / else <span class="badge">Ex 06</span></h3>
+          <div class="body">
+            <p class="explain">Conditions can nest inside each other, creating multiple decision paths.</p>
+            <div class="scenario">
+              <p><strong>Humanities scenario:</strong> An archive groups records first by whether they have a date, then by which decade they belong to. This helps researchers organise sources with different levels of detail.</p>
+              <p><strong>Link to the code:</strong> The example below uses simple values and nested decisions to illustrate sorting records into more than one group.</p>
+              <p class="think"><strong>Think:</strong> What happens to records with missing or disputed dates under these categories?</p>
             </div>
-
-            <div class="exercise-card" data-exercise="6">
-              <button class="toggle-lock-btn" type="button">🔓 Unlock</button>
-              <div class="card-head"><span class="card-title">Nested if / else</span><span class="ex-badge badge-gold">Ex 06</span></div>
-              <div class="card-body">
-                <p class="explain">Conditions can nest inside each other, creating multiple decision paths.</p>
-                <div class="code-wrap"><pre><code class="language-python">age = 8
-if age <= 7:
+            <pre><code>age = 8
+if age &lt;= 7:
     print("Free")
 else:
     print("Buy")
-    if age <= 18:
+    if age &lt;= 18:
         print("child ticket")
     else:
-        print("full ticket")</code></pre></div>
-                <ul class="key-list">
-                  <li>Each level of nesting adds 4 more spaces</li>
-                  <li>Use <strong>elif</strong> to chain conditions cleanly</li>
-                </ul>
-                <div class="dh-tag">Classifying texts by era, genre, or word count across multiple categories</div>
-              </div>
-              <div class="locked-overlay"><div class="locked-message">Locked by instructor</div></div>
-            </div>
+        print("full ticket")</code></pre>
+            <ul class="keys"><li>Each level of nesting adds 4 more spaces</li><li>Use <strong>elif</strong> to chain conditions cleanly</li></ul>
+            <p class="dh-use">Digital Humanities use: Classifying texts by era, genre, or word count across multiple categories</p>
           </div>
+        </article>
+      </div>
 
-          <div class="section-label"><h2>String Slicing</h2></div>
-          <div class="cards">
-            <div class="exercise-card" data-exercise="7">
-              <button class="toggle-lock-btn" type="button">🔓 Unlock</button>
-              <div class="card-head"><span class="card-title">Slicing a string</span><span class="ex-badge badge-indigo">Ex 07</span></div>
-              <div class="card-body">
-                <p class="explain">Extract any part of a string using <code>[start:end:step]</code>. Indices start at 0; negative indices count from the end.</p>
-                <div class="code-wrap"><pre><code class="language-python">sentence = "racecarleveldeified"
-
+      <h2 class="section-title">String Slicing</h2>
+      <div class="cards">
+        <article class="card">
+          <h3>Slicing a string <span class="badge">Ex 07</span></h3>
+          <div class="body">
+            <p class="explain">Extract any part of a string using <code>[start:end:step]</code>. Indices start at 0; negative indices count from the end.</p>
+            <div class="scenario">
+              <p><strong>Humanities scenario:</strong> A citation list contains short reference codes with dates or collection numbers in fixed positions. Researchers may inspect just one part to compare records.</p>
+              <p><strong>Link to the code:</strong> The example below uses a simple text value to show how a selected section can be taken from a longer string.</p>
+              <p class="think"><strong>Think:</strong> What context could be lost when a citation is reduced to only a few characters?</p>
+            </div>
+            <pre><code>sentence = "racecarleveldeified"
 print(sentence[0:3])    # "rac"
-print(sentence[:3])     # "rac"  (start defaults to 0)
-print(sentence[5:10])   # characters 5–9
+print(sentence[:3])     # "rac"
+print(sentence[5:10])   # characters 5-9
 print(sentence[5:])     # from index 5 to end
 print(sentence[-1])     # last character
 print(sentence[-4:])    # last 4 characters
 print(sentence[5:][0])  # chain slices
-print(sentence[::2])    # every 2nd character</code></pre></div>
-                <ul class="key-list">
-                  <li><strong>[start:end]</strong> — end is <em>not</em> included</li>
-                  <li><strong>[-1]</strong> — last character; <strong>[-n:]</strong> — last n characters</li>
-                  <li><strong>[::2]</strong> — every other character (step)</li>
-                </ul>
-                <div class="dh-tag">Extracting date components, file name prefixes, citation codes from structured text</div>
-              </div>
-              <div class="locked-overlay"><div class="locked-message">Locked by instructor</div></div>
+print(sentence[::2])    # every 2nd character</code></pre>
+            <ul class="keys"><li><strong>[start:end]</strong> — end is <em>not</em> included</li><li><strong>[-1]</strong> — last character; <strong>[-n:]</strong> — last n characters</li><li><strong>[::2]</strong> — every other character (step)</li></ul>
+            <p class="dh-use">Digital Humanities use: Extracting date components, file name prefixes, citation codes from structured text</p>
+          </div>
+        </article>
+        <article class="card">
+          <h3>Splitting into words <span class="badge">Ex 08</span></h3>
+          <div class="body">
+            <p class="explain"><code>.split()</code> breaks a string into a list of words. Lists can be sliced just like strings.</p>
+            <div class="scenario">
+              <p><strong>Humanities scenario:</strong> A researcher studies a sentence from a novel or letter and wants to examine its words one by one. Splitting text can make patterns easier to inspect.</p>
+              <p><strong>Link to the code:</strong> The example below uses a simple sentence to demonstrate separating words and selecting parts of the list.</p>
+              <p class="think"><strong>Think:</strong> How might punctuation, spelling variation, or transcription errors affect what counts as a word?</p>
             </div>
-
-            <div class="exercise-card" data-exercise="8">
-              <button class="toggle-lock-btn" type="button">🔓 Unlock</button>
-              <div class="card-head"><span class="card-title">Splitting into words</span><span class="ex-badge badge-indigo">Ex 08</span></div>
-              <div class="card-body">
-                <p class="explain"><code>.split()</code> breaks a string into a list of words. Lists can be sliced just like strings.</p>
-                <div class="code-wrap"><pre><code class="language-python">sentence = "Alice went to the park..."
+            <pre><code>sentence = "Alice went to the park..."
 words = sentence.split(" ")
-
 print(words)         # full list
 print(words[0])      # first word
 print(words[0:3])    # first 3 words
 print(words[-3:])    # last 3 words
 print(len(words))    # word count
 print(words[2][0])   # 1st letter of 3rd word
-print(words[-1][-1]) # last letter of last word</code></pre></div>
-                <ul class="key-list">
-                  <li><strong>.split(" ")</strong> splits on spaces → list of words</li>
-                  <li><strong>len()</strong> counts items in a list</li>
-                  <li>Chain: <strong>words[i][j]</strong> — j-th character of i-th word</li>
-                </ul>
-                <div class="dh-tag">Tokenising sentences, counting words in a passage, finding the first word of each sentence</div>
-              </div>
-              <div class="locked-overlay"><div class="locked-message">Locked by instructor</div></div>
-            </div>
+print(words[-1][-1]) # last letter of last word</code></pre>
+            <ul class="keys"><li><strong>.split(" ")</strong> splits on spaces into a list of words</li><li><strong>len()</strong> counts items in a list</li><li>Chain: <strong>words[i][j]</strong> — j-th character of i-th word</li></ul>
+            <p class="dh-use">Digital Humanities use: Tokenising sentences, counting words in a passage, finding the first word of each sentence</p>
           </div>
+        </article>
+      </div>
 
-          <div class="section-label"><h2>List Comprehensions</h2></div>
-          <div class="cards">
-            <div class="exercise-card" data-exercise="9">
-              <button class="toggle-lock-btn" type="button">🔓 Unlock</button>
-              <div class="card-head"><span class="card-title">Basic list comprehension</span><span class="ex-badge badge-teal">Ex 09</span></div>
-              <div class="card-body">
-                <p class="explain">A compact way to loop over a list and collect results. This one just reproduces the words, but sets up the pattern.</p>
-                <div class="code-wrap"><pre><code class="language-python">sentence = "When Alice and her younger..."
-words = sentence.split(" ")
-
-print([word for word in words])</code></pre></div>
-                <ul class="key-list">
-                  <li>Structure: <strong>[expression for item in list]</strong></li>
-                  <li>Returns a new list</li>
-                </ul>
-                <div class="dh-tag">The foundation of text processing — every word in a corpus becomes a data point</div>
-              </div>
-              <div class="locked-overlay"><div class="locked-message">Locked by instructor</div></div>
+      <h2 class="section-title">List Comprehensions</h2>
+      <div class="cards">
+        <article class="card">
+          <h3>Basic list comprehension <span class="badge">Ex 09</span></h3>
+          <div class="body">
+            <p class="explain">A compact way to loop over a list and collect results. This one just reproduces the words, but sets up the pattern.</p>
+            <div class="scenario">
+              <p><strong>Humanities scenario:</strong> A researcher gathers the words from a set of letters to create a list for later comparison. Keeping each word visible can help reveal repeated themes or names.</p>
+              <p><strong>Link to the code:</strong> The example below uses a simple sentence and collects its words into a new list.</p>
+              <p class="think"><strong>Think:</strong> Which words might be overrepresented because of the author, genre, or the texts selected?</p>
             </div>
-
-            <div class="exercise-card" data-exercise="10">
-              <button class="toggle-lock-btn" type="button">🔓 Unlock</button>
-              <div class="card-head"><span class="card-title">Comprehensions with transforms &amp; filters</span><span class="ex-badge badge-teal">Ex 10</span></div>
-              <div class="card-body">
-                <p class="explain">List comprehensions can transform each item and optionally filter with <code>if</code>. Very powerful for text analysis.</p>
-                <div class="code-wrap"><pre><code class="language-python"># First letter of every word
+            <pre><code>sentence = "When Alice and her younger..."
+words = sentence.split(" ")
+print([word for word in words])</code></pre>
+            <ul class="keys"><li>Structure: <strong>[expression for item in list]</strong></li><li>Returns a new list</li></ul>
+            <p class="dh-use">Digital Humanities use: The foundation of text processing — every word in a corpus becomes a data point</p>
+          </div>
+        </article>
+        <article class="card">
+          <h3>Comprehensions with transforms &amp; filters <span class="badge">Ex 10</span></h3>
+          <div class="body">
+            <p class="explain">List comprehensions can transform each item and optionally filter with <code>if</code>. Very powerful for text analysis.</p>
+            <div class="scenario">
+              <p><strong>Humanities scenario:</strong> A researcher filters words from digitised newspaper articles to focus on longer terms or compare word lengths across a collection.</p>
+              <p><strong>Link to the code:</strong> The example below uses a simple list of words to demonstrate selecting and transforming items.</p>
+              <p class="think"><strong>Think:</strong> What important voices or meanings might a length-based filter leave out?</p>
+            </div>
+            <pre><code># First letter of every word
 [word[0] for word in words]
-
 # Length of every word
 [len(word) for word in words]
-
 # Only short words (5 letters or fewer)
-[word for word in words if len(word) <= 5]
-
+[word for word in words if len(word) &lt;= 5]
 # First+last letter of long words
 [word[0] + word[-1] for word in words
- if len(word) >= 5]
-
+ if len(word) &gt;= 5]
 # Join result with underscores
 "_".join([word[0]+word[-1]
-          for word in words if len(word)>=5])
-
+          for word in words if len(word)&gt;=5])
 # Reverse the word list
-words[::-1]</code></pre></div>
-                <ul class="key-list">
-                  <li>Add <strong>if condition</strong> at the end to filter</li>
-                  <li><strong>"sep".join(list)</strong> — joins list into one string</li>
-                  <li><strong>[::-1]</strong> — reverses any sequence</li>
-                </ul>
-                <div class="dh-tag">Extract initials, find long words, build concordances, reverse a sentence for analysis</div>
-              </div>
-              <div class="locked-overlay"><div class="locked-message">Locked by instructor</div></div>
-            </div>
+words[::-1]</code></pre>
+            <ul class="keys"><li>Add <strong>if condition</strong> at the end to filter</li><li><strong>"sep".join(list)</strong> — joins a list into one string</li><li><strong>[::-1]</strong> — reverses any sequence</li></ul>
+            <p class="dh-use">Digital Humanities use: Extract initials, find long words, build concordances, reverse a sentence for analysis</p>
           </div>
-        </div>
+        </article>
+      </div>
+    </section>
 
-        <div id="s2" class="session-block">
-          <div class="dh-banner">
-            <div class="dh-banner-icon">☁️</div>
-            <div class="dh-banner-text">
-              <strong>Session 02 — Word clouds &amp; text visualisation</strong>
-              <p>These exercises load real text from the web, generate word clouds, apply image masks, filter stopwords, and customise colours — turning a plain text file into a visual argument about its content.</p>
-            </div>
-          </div>
+    <section class="panel" id="s2" role="tabpanel" aria-labelledby="tab-s2" hidden>
+      <div class="intro">
+        <h2>Session 02 — Word clouds &amp; text visualisation</h2>
+        <p>These exercises load real text from the web, generate word clouds, apply image masks, filter stopwords, and customise colours — turning a plain text file into a visual argument about its content.</p>
+      </div>
 
-          <div class="section-label"><h2>Setup &amp; Basic Word Cloud</h2></div>
-          <div class="cards">
-            <div class="exercise-card" data-exercise="11">
-              <button class="toggle-lock-btn" type="button">🔓 Unlock</button>
-              <div class="card-head"><span class="card-title">Install &amp; first word cloud</span><span class="ex-badge badge-teal">Ex 11</span></div>
-              <div class="card-body">
-                <p class="explain">Install the library once per session (Colab), then generate a word cloud from a string of text and display it as an image.</p>
-                <div class="code-wrap"><pre><code class="language-python">pip install wordcloud
+      <h2 class="section-title">Setup &amp; Basic Word Cloud</h2>
+      <div class="cards">
+        <article class="card">
+          <h3>Install &amp; first word cloud <span class="badge">Ex 11</span></h3>
+          <div class="body">
+            <p class="explain">Install the library once per session (Colab), then generate a word cloud from a string of text and display it as an image.</p>
+            <pre><code>pip install wordcloud
 from wordcloud import WordCloud
-
 wc = WordCloud().generate("rain rain brings hope hope")
 img = wc.to_image()
-img.show()</code></pre></div>
-                <ul class="key-list">
-                  <li><strong>pip install</strong> — downloads a library (once per session)</li>
-                  <li><strong>from … import …</strong> — brings in just the class you need</li>
-                  <li><strong>.generate(text)</strong> — builds the cloud from a string</li>
-                  <li><strong>.to_image()</strong> — converts to a viewable image</li>
-                </ul>
-                <div class="dh-tag">First step toward visualising any text corpus — speeches, novels, newspaper archives</div>
-              </div>
-              <div class="locked-overlay"><div class="locked-message">Locked by instructor</div></div>
-            </div>
-
-            <div class="exercise-card" data-exercise="12">
-              <button class="toggle-lock-btn" type="button">🔓 Unlock</button>
-              <div class="card-head"><span class="card-title">Load text from the web</span><span class="ex-badge badge-teal">Ex 12</span></div>
-              <div class="card-body">
-                <p class="explain">Fetch any public text file directly from a URL. Project Gutenberg, government archives, and digitised newspapers are all accessible this way.</p>
-                <div class="code-wrap"><pre><code class="language-python">import urllib.request
-
-text = urllib.request.urlopen(
-    "URL of your online text file"
-).read().decode("utf-8")
-
-text[:50]   # preview first 50 characters</code></pre></div>
-                <ul class="key-list">
-                  <li><strong>urllib.request</strong> — built-in Python web fetching</li>
-                  <li><strong>.read()</strong> downloads as bytes; <strong>.decode("utf-8")</strong> converts to text</li>
-                  <li><strong>text[:50]</strong> — preview without printing everything</li>
-                </ul>
-                <div class="dh-tag">Load historical texts, digitised books, or any corpus hosted online without downloading files</div>
-              </div>
-              <div class="locked-overlay"><div class="locked-message">Locked by instructor</div></div>
-            </div>
+img.show()</code></pre>
+            <ul class="keys"><li><strong>pip install</strong> downloads a library (once per session)</li><li><strong>from ... import ...</strong> brings in just the class you need</li><li><strong>.generate(text)</strong> builds the cloud from a string</li><li><strong>.to_image()</strong> converts it to a viewable image</li></ul>
+            <p class="dh-use">Digital Humanities use: First step toward visualising any text corpus — speeches, novels, newspaper archives</p>
           </div>
+        </article>
+        <article class="card">
+          <h3>Load text from the web <span class="badge">Ex 12</span></h3>
+          <div class="body">
+            <p class="explain">Fetch any public text file directly from a URL. Project Gutenberg, government archives, and digitised newspapers are all accessible this way.</p>
+            <pre><code>import urllib.request
+text_url = "PASTE_YOUR_GOOGLE_DOC_EXPORT_URL_HERE"
 
-          <div class="cards">
-            <div class="exercise-card" data-exercise="13">
-              <button class="toggle-lock-btn" type="button">🔓 Unlock</button>
-              <div class="card-head"><span class="card-title">Word cloud from loaded text</span><span class="ex-badge badge-teal">Ex 13</span></div>
-              <div class="card-body">
-                <p class="explain">Once <code>text</code> is loaded, generating the cloud is a single chained line.</p>
-                <div class="code-wrap"><pre><code class="language-python">WordCloud().generate_from_text(text).to_image()</code></pre></div>
-                <ul class="key-list">
-                  <li><strong>.generate_from_text()</strong> — takes a full text string</li>
-                  <li>Method chaining: each <strong>.</strong> calls the next step on the result</li>
-                </ul>
-                <div class="dh-tag">Instant visual summary of any document — good for exploring unfamiliar corpora</div>
-              </div>
-              <div class="locked-overlay"><div class="locked-message">Locked by instructor</div></div>
-            </div>
-
-            <div class="exercise-card" data-exercise="14">
-              <button class="toggle-lock-btn" type="button">🔓 Unlock</button>
-              <div class="card-head"><span class="card-title">Stopwords &amp; background colour</span><span class="ex-badge badge-teal">Ex 14</span></div>
-              <div class="card-body">
-                <p class="explain"><strong>Stopwords</strong> are common words (and, the, but…) that carry no meaning and dominate word clouds unless removed.</p>
-                <div class="code-wrap"><pre><code class="language-python">WordCloud(
+text = urllib.request.urlopen(text_url).read().decode("utf-8")
+text[:50]   # preview first 50 characters</code></pre>
+            <ul class="keys"><li><strong>urllib.request</strong> — built-in Python web fetching</li><li><strong>.read()</strong> downloads bytes; <strong>.decode("utf-8")</strong> converts to text</li><li><strong>text[:50]</strong> previews without printing everything</li></ul>
+            <p class="dh-use">Digital Humanities use: Load historical texts, digitised books, or any corpus hosted online without downloading files</p>
+          </div>
+        </article>
+        <article class="card">
+          <h3>Word cloud from loaded text <span class="badge">Ex 13</span></h3>
+          <div class="body">
+            <p class="explain">Once <code>text</code> is loaded, generating the cloud is a single chained line.</p>
+            <pre><code>WordCloud().generate_from_text(text).to_image()</code></pre>
+            <ul class="keys"><li><strong>.generate_from_text()</strong> takes a full text string</li><li>Method chaining: each <strong>.</strong> calls the next step on the result</li></ul>
+            <p class="dh-use">Digital Humanities use: Instant visual summary of any document — good for exploring unfamiliar corpora</p>
+          </div>
+        </article>
+        <article class="card">
+          <h3>Stopwords &amp; background colour <span class="badge">Ex 14</span></h3>
+          <div class="body">
+            <p class="explain"><strong>Stopwords</strong> are common words (and, the, but…) that carry no meaning and dominate word clouds unless removed.</p>
+            <pre><code>WordCloud(
     stopwords=["and", "then", "but"],
     background_color="white"
-).generate_from_text(text).to_image()</code></pre></div>
-                <ul class="key-list">
-                  <li><strong>stopwords=</strong> — list of words to exclude</li>
-                  <li><strong>background_color=</strong> — default is black</li>
-                  <li>Use a full NLTK stopword list in Ex 17</li>
-                </ul>
-                <div class="dh-tag">Critical step: removing grammatical noise reveals the content words that carry meaning</div>
-              </div>
-              <div class="locked-overlay"><div class="locked-message">Locked by instructor</div></div>
-            </div>
+).generate_from_text(text).to_image()</code></pre>
+            <ul class="keys"><li><strong>stopwords=</strong> — list of words to exclude</li><li><strong>background_color=</strong> — default is black</li><li>Use a full NLTK stopword list in Ex 17</li></ul>
+            <p class="dh-use">Digital Humanities use: Critical step: removing grammatical noise reveals the content words that carry meaning</p>
           </div>
+        </article>
+      </div>
 
-          <div class="section-label"><h2>Image Masks</h2></div>
-          <div class="cards">
-            <div class="exercise-card" data-exercise="15">
-              <button class="toggle-lock-btn" type="button">🔓 Unlock</button>
-              <div class="card-head"><span class="card-title">Load an image from Drive</span><span class="ex-badge badge-coral">Ex 15</span></div>
-              <div class="card-body">
-                <p class="explain">Download an image from Google Drive and display it. The File ID comes from the sharing link of your Drive file.</p>
-                <div class="code-wrap"><pre><code class="language-python">from PIL import Image
+      <h2 class="section-title">Image Masks</h2>
+      <div class="cards">
+        <article class="card">
+          <h3>Load an image from Drive <span class="badge">Ex 15</span></h3>
+          <div class="body">
+            <p class="explain">Download an image from Google Drive and display it. The File ID comes from the sharing link of your Drive file.</p>
+            <pre><code>from PIL import Image
 import urllib.request
+image_url = "PASTE_YOUR_DIRECT_DRIVE_IMAGE_URL_HERE"
 
-img = urllib.request.urlretrieve(
-    "https://drive.google.com/uc?export=download&id=FILE_ID",
-    "image1.png"
-)
-
-Image.open("image1.png")</code></pre></div>
-                <ul class="key-list">
-                  <li><strong>PIL / Pillow</strong> — Python image library</li>
-                  <li><strong>urlretrieve(url, filename)</strong> — downloads and saves locally</li>
-                  <li>Replace <strong>FILE_ID</strong> with your Drive file's ID</li>
-                </ul>
-                <div class="dh-tag">Load historical maps, portraits, or silhouettes to use as word cloud shapes</div>
-              </div>
-              <div class="locked-overlay"><div class="locked-message">Locked by instructor</div></div>
-            </div>
-
-            <div class="exercise-card" data-exercise="16">
-              <button class="toggle-lock-btn" type="button">🔓 Unlock</button>
-              <div class="card-head"><span class="card-title">Word cloud shaped by an image</span><span class="ex-badge badge-coral">Ex 16</span></div>
-              <div class="card-body">
-                <p class="explain">Use any black-and-white image as a <strong>mask</strong> — the word cloud fills the white areas of the shape.</p>
-                <div class="code-wrap"><pre><code class="language-python">import numpy as np
+img = urllib.request.urlretrieve(image_url, "image1.png")
+Image.open("image1.png")</code></pre>
+            <ul class="keys"><li><strong>PIL / Pillow</strong> — Python image library</li><li><strong>urlretrieve(url, filename)</strong> downloads and saves locally</li><li>Replace <strong>FILE_ID</strong> with your Drive file's ID</li></ul>
+            <p class="dh-use">Digital Humanities use: Load historical maps, portraits, or silhouettes to use as word cloud shapes</p>
+          </div>
+        </article>
+        <article class="card">
+          <h3>Word cloud shaped by an image <span class="badge">Ex 16</span></h3>
+          <div class="body">
+            <p class="explain">Use any black-and-white image as a <strong>mask</strong> — the word cloud fills the white areas of the shape.</p>
+            <pre><code>import numpy as np
+text_url = "PASTE_YOUR_GOOGLE_DOC_EXPORT_URL_HERE"
+image_url = "PASTE_YOUR_DIRECT_DRIVE_IMAGE_URL_HERE"
 
 text = urllib.request.urlopen(
-    "https://drive.google.com/uc?export=download&id=FILE_ID"
+    text_url
 ).read().decode("utf-8")
-
-img = urllib.request.urlretrieve(
-    "https://drive.google.com/uc?export=download&id=FILE_ID",
-    "image1.png"
-)
-
+img = urllib.request.urlretrieve(image_url, "image1.png")
 WordCloud(
     mask=np.array(Image.open("image1.png")),
     background_color="white"
-).generate_from_text(text).to_image()</code></pre></div>
-                <ul class="key-list">
-                  <li><strong>np.array(Image.open(...))</strong> — converts image to a numeric grid</li>
-                  <li><strong>mask=</strong> — the shape the words must stay inside</li>
-                  <li>Dark pixels = no words; white = fill with words</li>
-                </ul>
-                <div class="dh-tag">Shape a word cloud like a country outline, a book, or a person's silhouette for visual storytelling</div>
-              </div>
-              <div class="locked-overlay"><div class="locked-message">Locked by instructor</div></div>
-            </div>
+).generate_from_text(text).to_image()</code></pre>
+            <ul class="keys"><li><strong>np.array(Image.open(...))</strong> converts an image to a numeric grid</li><li><strong>mask=</strong> — the shape the words must stay inside</li><li>Dark pixels = no words; white = fill with words</li></ul>
+            <p class="dh-use">Digital Humanities use: Shape a word cloud like a country outline, a book, or a person's silhouette for visual storytelling</p>
           </div>
+        </article>
+      </div>
 
-          <div class="section-label"><h2>Stopwords &amp; Custom Colours</h2></div>
-          <div class="cards">
-            <div class="exercise-card" data-exercise="17">
-              <button class="toggle-lock-btn" type="button">🔓 Unlock</button>
-              <div class="card-head"><span class="card-title">NLTK stopword list from web</span><span class="ex-badge badge-gold">Ex 17</span></div>
-              <div class="card-body">
-                <p class="explain">Fetch a full professional stopword list directly from GitHub rather than typing individual words manually.</p>
-                <div class="code-wrap"><pre><code class="language-python">stopwords_list = urllib.request.urlopen(
+      <h2 class="section-title">Stopwords &amp; Custom Colours</h2>
+      <div class="cards">
+        <article class="card">
+          <h3>NLTK stopword list from web <span class="badge">Ex 17</span></h3>
+          <div class="body">
+            <p class="explain">Fetch a full professional stopword list directly from GitHub rather than typing individual words manually.</p>
+            <pre><code>stopwords_list = urllib.request.urlopen(
     "https://gist.githubusercontent.com/sebleier/554280/..."
-).read().decode("utf-8").split("\n")
-
+).read().decode("utf-8").split("\\n")
 WordCloud(
     mask=np.array(Image.open("image1.png")),
     background_color="white",
     stopwords=stopwords_list
-).generate_from_text(text).to_image()</code></pre></div>
-                <ul class="key-list">
-                  <li><strong>.split("\n")</strong> — splits the file into one word per line</li>
-                  <li>NLTK stopword list: ~179 common English words</li>
-                  <li>Can load custom stopword lists for any language</li>
-                </ul>
-                <div class="dh-tag">Essential for non-English corpora — load Estonian, French, or domain-specific stopwords the same way</div>
-              </div>
-              <div class="locked-overlay"><div class="locked-message">Locked by instructor</div></div>
-            </div>
-
-            <div class="exercise-card" data-exercise="18">
-              <button class="toggle-lock-btn" type="button">🔓 Unlock</button>
-              <div class="card-head"><span class="card-title">Custom colour function</span><span class="ex-badge badge-gold">Ex 18</span></div>
-              <div class="card-body">
-                <p class="explain">Define your own rule for colouring words. Here: short words are green, longer ones are blue.</p>
-                <div class="code-wrap"><pre><code class="language-python">def color_function(word, font_size, position,
+).generate_from_text(text).to_image()</code></pre>
+            <ul class="keys"><li><strong>.split("\\n")</strong> splits the file into one word per line</li><li>NLTK stopword list: about 179 common English words</li><li>Custom stopword lists for any language can be loaded the same way</li></ul>
+            <p class="dh-use">Digital Humanities use: Essential for non-English corpora — load Estonian, French, or domain-specific stopwords the same way</p>
+          </div>
+        </article>
+        <article class="card">
+          <h3>Custom colour function <span class="badge">Ex 18</span></h3>
+          <div class="body">
+            <p class="explain">Define your own rule for colouring words. Here: short words are green, longer ones are blue.</p>
+            <pre><code>def color_function(word, font_size, position,
                    orientation, random_state=None,
                    **additional_args):
     if len(word) &lt; 4:   # fewer than 4 letters
@@ -1184,228 +495,44 @@ WordCloud(
 
 WordCloud().generate_from_text(text)\
            .recolor(color_func=color_function)\
-           .to_image()</code></pre></div>
-                <ul class="key-list">
-                  <li><strong>def</strong> defines a reusable function</li>
-                  <li>Colour by word length, frequency, sentiment, part of speech…</li>
-                  <li><strong>.recolor(color_func=)</strong> applies your function to the existing cloud</li>
-                </ul>
-                <div class="dh-tag">Highlight sentiment, rare vs. common words, or named entities in different colours</div>
-              </div>
-              <div class="locked-overlay"><div class="locked-message">Locked by instructor</div></div>
-            </div>
+           .to_image()</code></pre>
+            <ul class="keys"><li><strong>def</strong> defines a reusable function</li><li>Colour by word length, frequency, sentiment, part of speech…</li><li><strong>.recolor(color_func=)</strong> applies your function to the existing cloud</li></ul>
+            <p class="dh-use">Digital Humanities use: Highlight sentiment, rare vs. common words, or named entities in different colours</p>
           </div>
-        </div>
+        </article>
       </div>
-    </div>
-  </div>
-
-  <div id="passwordModal" class="password-modal" aria-hidden="true">
-    <div class="password-panel" role="dialog" aria-modal="true" aria-labelledby="passwordTitle">
-      <h3 id="passwordTitle">Access Portal</h3>
-      <p>Enter the password to continue.</p>
-      <input id="passwordInput" type="password" placeholder="Password" />
-      <div class="password-actions">
-        <button type="button" class="secondary-btn" id="cancelPassword">Cancel</button>
-        <button type="button" class="primary-btn" id="submitPassword">Unlock</button>
-      </div>
-    </div>
-  </div>
+    </section>
+  </main>
 
   <script>
-    const TEACHER_PASSWORD = "teach2025";
-    const STUDENT_PASSWORD = "python10";
-    const MODE_KEY = "dh_mode";
-    const UNLOCK_KEY = "lesson10_unlocked";
+    const tabs = [...document.querySelectorAll('[role="tab"]')];
+    const panels = [...document.querySelectorAll('[role="tabpanel"]')];
 
-    const homePage = document.getElementById('homePage');
-    const lessonPage = document.getElementById('lessonPage');
-    const modeBadge = document.getElementById('modeBadge');
-    const lockButton = document.getElementById('lockButton');
-    const logoutButton = document.getElementById('logoutButton');
-    const passwordModal = document.getElementById('passwordModal');
-    const passwordInput = document.getElementById('passwordInput');
-    const teacherControls = document.getElementById('teacherControls');
-    const unlockAllBtn = document.getElementById('unlockAllBtn');
-    const lockAllBtn = document.getElementById('lockAllBtn');
-
-    function getMode() {
-      return sessionStorage.getItem(MODE_KEY) || 'locked';
+    function selectTab(tab) {
+      tabs.forEach((item) => {
+        const selected = item === tab;
+        item.setAttribute("aria-selected", String(selected));
+        item.tabIndex = selected ? 0 : -1;
+      });
+      panels.forEach((panel) => {
+        const selected = panel.id === tab.getAttribute("aria-controls");
+        panel.hidden = !selected;
+        panel.classList.toggle("active", selected);
+      });
     }
 
-    function setMode(mode) {
-      if (mode === 'locked') {
-        sessionStorage.removeItem(MODE_KEY);
-      } else {
-        sessionStorage.setItem(MODE_KEY, mode);
-      }
-      updateModeUI();
-      updateExerciseState();
-    }
-
-    function getUnlockedExercises() {
-      try {
-        const parsed = JSON.parse(localStorage.getItem(UNLOCK_KEY) || '[]');
-        return Array.isArray(parsed) ? parsed.map(Number) : [];
-      } catch (error) {
-        return [];
-      }
-    }
-
-    function setUnlockedExercises(list) {
-      localStorage.setItem(UNLOCK_KEY, JSON.stringify(list));
-      updateExerciseState();
-    }
-
-    function updateModeUI() {
-      const mode = getMode();
-      modeBadge.classList.remove('locked', 'student', 'teacher');
-      if (mode === 'student') {
-        modeBadge.textContent = '🟢 Student';
-        modeBadge.classList.add('student');
-      } else if (mode === 'teacher') {
-        modeBadge.textContent = '🟡 Teacher';
-        modeBadge.classList.add('teacher');
-      } else {
-        modeBadge.textContent = '🔴 Locked';
-        modeBadge.classList.add('locked');
-      }
-      logoutButton.classList.toggle('hidden', mode === 'locked');
-      teacherControls.classList.toggle('visible', mode === 'teacher');
-    }
-
-    function updateExerciseState() {
-      const mode = getMode();
-      const unlocked = new Set(getUnlockedExercises());
-      const cards = document.querySelectorAll('.exercise-card');
-
-      cards.forEach((card) => {
-        const exerciseNumber = Number(card.dataset.exercise);
-        const isUnlocked = mode === 'teacher' || unlocked.has(exerciseNumber);
-
-        card.classList.toggle('locked', !isUnlocked);
-        card.classList.toggle('teacher-visible', mode === 'teacher');
-
-        const overlay = card.querySelector('.locked-overlay');
-        const toggle = card.querySelector('.toggle-lock-btn');
-        if (overlay) overlay.style.display = isUnlocked ? 'none' : 'flex';
-        if (toggle) {
-          toggle.textContent = unlocked.has(exerciseNumber) ? '🔒 Lock' : '🔓 Unlock';
-          toggle.style.display = mode === 'teacher' ? 'inline-flex' : 'none';
+    tabs.forEach((tab, index) => {
+      tab.addEventListener("click", () => selectTab(tab));
+      tab.addEventListener("keydown", (event) => {
+        let nextIndex = index;
+        if (event.key === "ArrowRight") nextIndex = (index + 1) % tabs.length;
+        if (event.key === "ArrowLeft") nextIndex = (index - 1 + tabs.length) % tabs.length;
+        if (nextIndex !== index) {
+          event.preventDefault();
+          tabs[nextIndex].focus();
+          selectTab(tabs[nextIndex]);
         }
       });
-    }
-
-    function showHome() {
-      homePage.classList.remove('hidden');
-      lessonPage.classList.add('hidden');
-    }
-
-    function showLesson() {
-      homePage.classList.add('hidden');
-      lessonPage.classList.remove('hidden');
-    }
-
-    function openPasswordModal() {
-      passwordModal.classList.add('visible');
-      passwordInput.value = '';
-      passwordInput.focus();
-    }
-
-    function closePasswordModal() {
-      passwordModal.classList.remove('visible');
-      passwordInput.value = '';
-    }
-
-    function validatePassword(value) {
-      if (value === TEACHER_PASSWORD) return 'teacher';
-      if (value === STUDENT_PASSWORD) return 'student';
-      return null;
-    }
-
-    document.getElementById('lockButton').addEventListener('click', () => {
-      openPasswordModal();
-    });
-
-    document.getElementById('cancelPassword').addEventListener('click', closePasswordModal);
-    document.getElementById('submitPassword').addEventListener('click', () => {
-      const value = passwordInput.value.trim();
-      const mode = validatePassword(value);
-      if (!mode) {
-        passwordInput.value = '';
-        passwordInput.placeholder = 'Wrong password';
-        passwordInput.focus();
-        return;
-      }
-      setMode(mode);
-      closePasswordModal();
-    });
-
-    passwordInput.addEventListener('keydown', (event) => {
-      if (event.key === 'Enter') {
-        document.getElementById('submitPassword').click();
-      }
-    });
-
-    document.getElementById('logoutButton').addEventListener('click', () => {
-      sessionStorage.clear();
-      setMode('locked');
-      showHome();
-    });
-
-    document.querySelectorAll('.lesson-card.clickable').forEach((card) => {
-      card.addEventListener('click', () => {
-        showLesson();
-      });
-    });
-
-    document.getElementById('backButton').addEventListener('click', () => {
-      showHome();
-    });
-
-    document.querySelectorAll('.session-tab').forEach((button) => {
-      button.addEventListener('click', () => {
-        const target = button.dataset.target;
-        document.querySelectorAll('.session-block').forEach((block) => {
-          block.classList.toggle('visible', block.id === target);
-        });
-        document.querySelectorAll('.session-tab').forEach((tab) => {
-          tab.classList.toggle('active', tab === button);
-        });
-      });
-    });
-
-    document.querySelectorAll('.toggle-lock-btn').forEach((button) => {
-      button.addEventListener('click', (event) => {
-        const card = event.currentTarget.closest('.exercise-card');
-        const exerciseNumber = Number(card.dataset.exercise);
-        const unlocked = new Set(getUnlockedExercises());
-
-        if (unlocked.has(exerciseNumber)) {
-          unlocked.delete(exerciseNumber);
-        } else {
-          unlocked.add(exerciseNumber);
-        }
-
-        setUnlockedExercises([...unlocked].sort((a, b) => a - b));
-      });
-    });
-
-    unlockAllBtn.addEventListener('click', () => {
-      setUnlockedExercises(Array.from({ length: 18 }, (_, index) => index + 1));
-    });
-
-    lockAllBtn.addEventListener('click', () => {
-      setUnlockedExercises([]);
-    });
-
-    window.addEventListener('load', () => {
-      const unlocked = getUnlockedExercises();
-      if (!unlocked.length) {
-        localStorage.setItem(UNLOCK_KEY, JSON.stringify([]));
-      }
-      updateModeUI();
-      updateExerciseState();
     });
   </script>
 </body>
